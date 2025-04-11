@@ -1,19 +1,41 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import TrainingGrid from "../components/TrainingGrid";
 import { hasRole } from "../utils/auth";
 import MenuItem from "@mui/material/MenuItem";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 
+interface Department {
+  departmentID: number;
+  departmentName: string;
+}
+
 const DashboardPage: React.FC = () => {
   const { user, logout } = useAuth();
   const isAdmin = hasRole(user, "Admin");
   const isManager = hasRole(user, "Manager");
 
-  const [selection, setSelection] = React.useState("");
+  const [departments, setDepartments] = useState<Department[]>([]);
+  const [selectedDept, setSelectedDept] = useState("");
+
+  useEffect(() => {
+    const fetchDepartments = async () => {
+      try {
+        const response = await fetch("https://localhost:44342/api/Departments");
+        if (!response.ok) throw new Error("Failed to fetch departments");
+
+        const data = await response.json();
+        setDepartments(data);
+      } catch (error) {
+        console.error("Error loading departments:", error);
+      }
+    };
+
+    fetchDepartments();
+  }, []);
 
   const handleSelectChange = (event: SelectChangeEvent) => {
-    setSelection(event.target.value as string);
+    setSelectedDept(event.target.value);
   };
 
   if (!user) return <p>Loading...</p>;
@@ -35,12 +57,12 @@ const DashboardPage: React.FC = () => {
             marginBottom: "20px",
           }}
         >
-          
+
           <Select
-            value={selection}
+            value={selectedDept}
             onChange={handleSelectChange}
             displayEmpty
-            inputProps={{ "aria-label": "Select Option" }}
+            inputProps={{ "aria-label": "Select Department" }}
             style={{
               height: "36px",
               padding: "0 12px",
@@ -54,9 +76,11 @@ const DashboardPage: React.FC = () => {
             <MenuItem value="" disabled>
               Select Department
             </MenuItem>
-            <MenuItem value={10}>Ten</MenuItem>
-            <MenuItem value={20}>Twenty</MenuItem>
-            <MenuItem value={30}>Thirty</MenuItem>
+            {departments.map((dept) => (
+              <MenuItem key={dept.departmentID} value={dept.departmentID}>
+                {dept.departmentName}
+              </MenuItem>
+            ))}
           </Select>
 
           <button>Add Department</button>
