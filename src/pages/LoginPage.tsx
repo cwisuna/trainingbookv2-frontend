@@ -1,37 +1,34 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 const LoginPage: React.FC = () => {
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
-    const [error, setError] = useState('');
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const { login } = useAuth();
+  const navigate = useNavigate();
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
 
-        try {
-            const response = await fetch('https://localhost:44342/api/Auth/login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ username, password }),
-            });
+    try {
+      const res = await fetch("https://localhost:44342/api/Auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password }),
+      });
 
-            if (!response.ok) {
-                const errorMsg = await response.text();
-                throw new Error(errorMsg || 'Login failed');
-            }
+      if (!res.ok) throw new Error(await res.text());
+      const data = await res.json();
 
-            const data = await response.json();
-            console.log('JWT Token:', data.token);
-            console.log('Expires:', data.expiration);
-
-            // TODO: Store token securely (e.g., keytar or Electron's secure storage)
-        } catch (err: any) {
-            console.error(err);
-            setError(err.message || 'An error occurred.');
-        }
-    };
+      login(data.token);
+      navigate("/dashboard");
+    } catch (err: any) {
+      console.error(err);
+      setError(err.message || "Login failed.");
+    }
+  };
 
     return (
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
