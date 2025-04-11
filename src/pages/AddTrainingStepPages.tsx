@@ -126,7 +126,7 @@ const AddTrainingStepPage: React.FC = () => {
         </div>
 
         <div>
-          <label>Training Duration (days):</label>
+          <label>Training Duration (Hrs):</label>
           <input
             type="number"
             value={form.trainingDuration}
