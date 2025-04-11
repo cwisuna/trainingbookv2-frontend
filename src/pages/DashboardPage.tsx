@@ -4,6 +4,7 @@ import TrainingGrid from '../components/TrainingGrid';
 import { hasRole } from '../utils/auth';
 import MenuItem from '@mui/material/MenuItem';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
+import { useNavigate } from 'react-router-dom';
 
 interface Department {
   departmentID: number;
@@ -12,6 +13,7 @@ interface Department {
 
 const DashboardPage: React.FC = () => {
   const { user, logout } = useAuth();
+  const navigate = useNavigate();
   const isAdmin = hasRole(user, 'Admin');
   const isManager = hasRole(user, 'Manager');
 
@@ -248,7 +250,17 @@ const DashboardPage: React.FC = () => {
             marginTop: '20px',
           }}
         >
-          <button>Add Training Step</button>
+          <button
+            onClick={() => {
+              if (!selectedDept) {
+                alert('Select a department first');
+                return;
+              }
+              navigate(`/add-training-step?departmentID=${selectedDept}`);
+            }}
+          >
+            Add Training Step
+          </button>
           <button>Edit Training Step</button>
           <button>Delete Training Step</button>
         </div>
