@@ -231,6 +231,20 @@ const DashboardPage: React.FC = () => {
       )}
 
       <TrainingGrid />
+
+{(isAdmin || isManager) && (
+  <div
+    style={{
+      display: "flex",
+      gap: "10px",
+      marginTop: "20px",
+    }}
+  >
+    <button>Add Training Step</button>
+    <button>Edit Training Step</button>
+    <button>Delete Training Step</button>
+  </div>
+)}
     </div>
   );
 };
