@@ -18,9 +18,10 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-  "start": "react-scripts start",
-  "electron:build": "tsc -p tsconfig.electron.json",
-  "electron:start": "npm run electron:build && electron ./dist-electron/electron.js"
+    "start": "concurrently \"npm run react\" \"npm run electron:start\"",
+    "react": "react-scripts start",
+    "electron:build": "tsc -p tsconfig.electron.json",
+    "electron:start": "npm run electron:build && electron ./dist-electron/electron.js"
   },
   "eslintConfig": {
     "extends": [
@@ -42,6 +43,7 @@
   },
   "devDependencies": {
     "@types/electron": "^1.4.38",
+    "concurrently": "^9.1.2",
     "electron": "^35.1.5"
   }
 }
