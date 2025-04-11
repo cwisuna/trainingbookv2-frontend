@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from "react";
-import { useAuth } from "../context/AuthContext";
-import TrainingGrid from "../components/TrainingGrid";
-import { hasRole } from "../utils/auth";
-import MenuItem from "@mui/material/MenuItem";
-import Select, { SelectChangeEvent } from "@mui/material/Select";
+import React, { useEffect, useState } from 'react';
+import { useAuth } from '../context/AuthContext';
+import TrainingGrid from '../components/TrainingGrid';
+import { hasRole } from '../utils/auth';
+import MenuItem from '@mui/material/MenuItem';
+import Select, { SelectChangeEvent } from '@mui/material/Select';
 
 interface Department {
   departmentID: number;
@@ -12,15 +12,15 @@ interface Department {
 
 const DashboardPage: React.FC = () => {
   const { user, logout } = useAuth();
-  const isAdmin = hasRole(user, "Admin");
-  const isManager = hasRole(user, "Manager");
+  const isAdmin = hasRole(user, 'Admin');
+  const isManager = hasRole(user, 'Manager');
 
   const [departments, setDepartments] = useState<Department[]>([]);
-  const [selectedDept, setSelectedDept] = useState("");
-  const [newDepartmentName, setNewDepartmentName] = useState("");
+  const [selectedDept, setSelectedDept] = useState('');
+  const [newDepartmentName, setNewDepartmentName] = useState('');
   const [showInput, setShowInput] = useState(false);
   const [editing, setEditing] = useState(false);
-  const [editName, setEditName] = useState("");
+  const [editName, setEditName] = useState('');
 
   useEffect(() => {
     fetchDepartments();
@@ -28,12 +28,12 @@ const DashboardPage: React.FC = () => {
 
   const fetchDepartments = async () => {
     try {
-      const response = await fetch("https://localhost:44342/api/departments");
-      if (!response.ok) throw new Error("Failed to fetch departments");
+      const response = await fetch('https://localhost:44342/api/departments');
+      if (!response.ok) throw new Error('Failed to fetch departments');
       const data = await response.json();
       setDepartments(data);
     } catch (error) {
-      console.error("Error loading departments:", error);
+      console.error('Error loading departments:', error);
     }
   };
 
@@ -45,55 +45,60 @@ const DashboardPage: React.FC = () => {
     if (!newDepartmentName.trim()) return;
 
     try {
-      const response = await fetch("https://localhost:44342/api/departments", {
-        method: "POST",
+      const response = await fetch('https://localhost:44342/api/departments', {
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({ departmentName: newDepartmentName }),
       });
 
-      if (!response.ok) throw new Error("Failed to add department");
+      if (!response.ok) throw new Error('Failed to add department');
 
       const newDept: Department = await response.json();
       setDepartments((prev) => [...prev, newDept]);
       setSelectedDept(String(newDept.departmentID));
-      setNewDepartmentName("");
+      setNewDepartmentName('');
       setShowInput(false);
     } catch (error) {
-      console.error("Error adding department:", error);
+      console.error('Error adding department:', error);
     }
   };
 
   const handleDeleteDepartment = async () => {
     if (!selectedDept) return;
 
-    const confirmDelete = window.confirm("Are you sure you want to delete this department?");
+    const confirmDelete = window.confirm(
+      'Are you sure you want to delete this department?'
+    );
     if (!confirmDelete) return;
 
     try {
-      const response = await fetch(`https://localhost:44342/api/departments/${selectedDept}`, {
-        method: "DELETE",
-      });
+      const response = await fetch(
+        `https://localhost:44342/api/departments/${selectedDept}`,
+        {
+          method: 'DELETE',
+        }
+      );
 
-      if (!response.ok) throw new Error("Failed to delete department");
+      if (!response.ok) throw new Error('Failed to delete department');
 
       setDepartments((prev) =>
         prev.filter((d) => d.departmentID !== parseInt(selectedDept))
       );
-      setSelectedDept("");
+      setSelectedDept('');
     } catch (error) {
-      console.error("Error deleting department:", error);
+      console.error('Error deleting department:', error);
     }
   };
 
   if (!user) return <p>Loading...</p>;
 
   return (
-    <div style={{ padding: "20px" }}>
+    <div style={{ padding: '20px' }}>
       <h2>Welcome, {user.name}</h2>
 
-      <button onClick={logout} style={{ marginBottom: "20px" }}>
+      <button onClick={logout} style={{ marginBottom: '20px' }}>
         Logout
       </button>
 
@@ -101,25 +106,25 @@ const DashboardPage: React.FC = () => {
         <>
           <div
             style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "10px",
-              marginBottom: "10px",
+              display: 'flex',
+              alignItems: 'center',
+              gap: '10px',
+              marginBottom: '10px',
             }}
           >
             <Select
               value={selectedDept}
               onChange={handleSelectChange}
               displayEmpty
-              inputProps={{ "aria-label": "Select Department" }}
+              inputProps={{ 'aria-label': 'Select Department' }}
               style={{
-                height: "36px",
-                padding: "0 12px",
-                fontSize: "14px",
-                border: "1px solid #ccc",
-                borderRadius: "4px",
-                backgroundColor: "white",
-                cursor: "pointer",
+                height: '36px',
+                padding: '0 12px',
+                fontSize: '14px',
+                border: '1px solid #ccc',
+                borderRadius: '4px',
+                backgroundColor: 'white',
+                cursor: 'pointer',
               }}
             >
               <MenuItem value="" disabled>
@@ -136,7 +141,9 @@ const DashboardPage: React.FC = () => {
             <button
               onClick={() => {
                 if (!selectedDept) return;
-                const dept = departments.find((d) => d.departmentID === parseInt(selectedDept));
+                const dept = departments.find(
+                  (d) => d.departmentID === parseInt(selectedDept)
+                );
                 if (dept) {
                   setEditName(dept.departmentName);
                   setEditing(true);
@@ -156,18 +163,18 @@ const DashboardPage: React.FC = () => {
           </div>
 
           {showInput && (
-            <div style={{ display: "flex", gap: "10px", marginBottom: "20px" }}>
+            <div style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
               <input
                 type="text"
                 value={newDepartmentName}
                 onChange={(e) => setNewDepartmentName(e.target.value)}
                 placeholder="New Department Name"
                 style={{
-                  height: "30px",
-                  fontSize: "14px",
-                  padding: "4px 8px",
-                  borderRadius: "4px",
-                  border: "1px solid #ccc",
+                  height: '30px',
+                  fontSize: '14px',
+                  padding: '4px 8px',
+                  borderRadius: '4px',
+                  border: '1px solid #ccc',
                 }}
               />
               <button onClick={handleAddDepartment}>Create</button>
@@ -176,18 +183,18 @@ const DashboardPage: React.FC = () => {
           )}
 
           {editing && (
-            <div style={{ display: "flex", gap: "10px", marginBottom: "20px" }}>
+            <div style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
               <input
                 type="text"
                 value={editName}
                 onChange={(e) => setEditName(e.target.value)}
                 placeholder="Edit Department Name"
                 style={{
-                  height: "30px",
-                  fontSize: "14px",
-                  padding: "4px 8px",
-                  borderRadius: "4px",
-                  border: "1px solid #ccc",
+                  height: '30px',
+                  fontSize: '14px',
+                  padding: '4px 8px',
+                  borderRadius: '4px',
+                  border: '1px solid #ccc',
                 }}
               />
               <button
@@ -197,15 +204,16 @@ const DashboardPage: React.FC = () => {
                     const response = await fetch(
                       `https://localhost:44342/api/departments/${selectedDept}`,
                       {
-                        method: "PUT",
+                        method: 'PUT',
                         headers: {
-                          "Content-Type": "application/json",
+                          'Content-Type': 'application/json',
                         },
                         body: JSON.stringify({ departmentName: editName }),
                       }
                     );
 
-                    if (!response.ok) throw new Error("Failed to update department");
+                    if (!response.ok)
+                      throw new Error('Failed to update department');
 
                     setDepartments((prev) =>
                       prev.map((d) =>
@@ -216,9 +224,9 @@ const DashboardPage: React.FC = () => {
                     );
 
                     setEditing(false);
-                    setEditName("");
+                    setEditName('');
                   } catch (error) {
-                    console.error("Error updating department:", error);
+                    console.error('Error updating department:', error);
                   }
                 }}
               >
@@ -232,19 +240,19 @@ const DashboardPage: React.FC = () => {
 
       <TrainingGrid />
 
-{(isAdmin || isManager) && (
-  <div
-    style={{
-      display: "flex",
-      gap: "10px",
-      marginTop: "20px",
-    }}
-  >
-    <button>Add Training Step</button>
-    <button>Edit Training Step</button>
-    <button>Delete Training Step</button>
-  </div>
-)}
+      {(isAdmin || isManager) && (
+        <div
+          style={{
+            display: 'flex',
+            gap: '10px',
+            marginTop: '20px',
+          }}
+        >
+          <button>Add Training Step</button>
+          <button>Edit Training Step</button>
+          <button>Delete Training Step</button>
+        </div>
+      )}
     </div>
   );
 };

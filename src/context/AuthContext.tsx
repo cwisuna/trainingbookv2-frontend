@@ -1,5 +1,5 @@
-import React, { createContext, useContext, useState, ReactNode } from "react";
-import { decodeToken, DecodedToken } from "../utils/auth";
+import React, { createContext, useContext, useState, ReactNode } from 'react';
+import { decodeToken, DecodedToken } from '../utils/auth';
 
 interface AuthContextType {
   token: string | null;
@@ -34,6 +34,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
-  if (!context) throw new Error("useAuth must be used within AuthProvider");
+  if (!context) throw new Error('useAuth must be used within AuthProvider');
   return context;
 };
