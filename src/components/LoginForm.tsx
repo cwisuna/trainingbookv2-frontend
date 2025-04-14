@@ -18,13 +18,11 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onLogin, error }) => {
     <form onSubmit={handleSubmit} style={formStyle}>
       <h2 style={titleStyle}>Login</h2>
 
-      {error && (
-        <div style={errorStyle}>
-          {error}
-        </div>
-      )}
+      {error && <div style={errorStyle}>{error}</div>}
 
-      <label htmlFor="username" style={labelStyle}>Username</label>
+      <label htmlFor="username" style={labelStyle}>
+        Username
+      </label>
       <input
         type="text"
         id="username"
@@ -33,7 +31,9 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onLogin, error }) => {
         style={inputStyle}
       />
 
-      <label htmlFor="password" style={labelStyle}>Password</label>
+      <label htmlFor="password" style={labelStyle}>
+        Password
+      </label>
       <input
         type="password"
         id="password"
@@ -42,7 +42,9 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onLogin, error }) => {
         style={inputStyle}
       />
 
-      <button type="submit" style={buttonStyle}>Login</button>
+      <button type="submit" style={buttonStyle}>
+        Login
+      </button>
     </form>
   );
 };
