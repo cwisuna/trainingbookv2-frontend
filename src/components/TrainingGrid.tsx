@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import {
   fetchTrainingStepsByDepartment,
-  TrainingStep
+  TrainingStep,
+  getFormattedStepsByDepartment
 } from '../services/trainingStepService';
 
 interface TrainingGridProps {
@@ -29,26 +30,22 @@ const columns: GridColDef[] = [
 const TrainingGrid: React.FC<TrainingGridProps> = ({ departmentId }) => {
   const [rows, setRows] = useState<any[]>([]);
 
-  useEffect(() => {
-    setRows([]);
-  
-    if (!departmentId) return;
-  
-    const loadSteps = async () => {
-      try {
-        const data = await fetchTrainingStepsByDepartment(departmentId);
-        const formattedRows = data.map((step, index) => ({
-          id: index + 1,
-          ...step,
-        }));
-        setRows(formattedRows);
-      } catch (err) {
-        console.error('Error loading department training steps:', err);
-      }
-    };
-  
-    loadSteps();
-  }, [departmentId]);
+useEffect(() => {
+  setRows([]); 
+
+  if (!departmentId) return;
+
+  const loadSteps = async () => {
+    try {
+      const formattedRows = await getFormattedStepsByDepartment(departmentId);
+      setRows(formattedRows);
+    } catch (err) {
+      console.error('Error loading training steps:', err);
+    }
+  };
+
+  loadSteps();
+}, [departmentId]);
   
 
   return (
