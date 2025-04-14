@@ -9,6 +9,10 @@ import {
   deleteDepartment,
   Department
 } from '../services/departmentService';
+import {
+  getUsersByDepartment,
+  User
+} from '../services/userService';
 import MenuItem from '@mui/material/MenuItem';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import { useNavigate } from 'react-router-dom';
@@ -21,6 +25,8 @@ const DashboardPage: React.FC = () => {
 
   const [departments, setDepartments] = useState<Department[]>([]);
   const [selectedDept, setSelectedDept] = useState('');
+  const [users, setUsers] = useState<User[]>([]);
+  const [selectedUser, setSelectedUser] = useState('');
   const [newDepartmentName, setNewDepartmentName] = useState('');
   const [showInput, setShowInput] = useState(false);
   const [editing, setEditing] = useState(false);
@@ -39,8 +45,21 @@ const DashboardPage: React.FC = () => {
     }
   };
 
-  const handleSelectChange = (event: SelectChangeEvent) => {
-    setSelectedDept(event.target.value);
+  const handleSelectChange = async (event: SelectChangeEvent) => {
+    const deptId = event.target.value;
+    setSelectedDept(deptId);
+    setSelectedUser('');
+    try {
+      const fetchedUsers = await getUsersByDepartment(parseInt(deptId));
+      setUsers(fetchedUsers);
+    } catch (error) {
+      console.error('Error fetching users:', error);
+      setUsers([]);
+    }
+  };
+
+  const handleUserChange = (event: SelectChangeEvent) => {
+    setSelectedUser(event.target.value);
   };
 
   const handleAddDepartment = async () => {
@@ -65,6 +84,7 @@ const DashboardPage: React.FC = () => {
       await deleteDepartment(parseInt(selectedDept));
       setDepartments((prev) => prev.filter((d) => d.departmentID !== parseInt(selectedDept)));
       setSelectedDept('');
+      setUsers([]);
     } catch (error) {
       console.error('Error deleting department:', error);
     }
@@ -119,6 +139,30 @@ const DashboardPage: React.FC = () => {
               {departments.map((dept) => (
                 <MenuItem key={dept.departmentID} value={dept.departmentID}>
                   {dept.departmentName}
+                </MenuItem>
+              ))}
+            </Select>
+
+            <Select
+              value={selectedUser}
+              onChange={handleUserChange}
+              displayEmpty
+              inputProps={{ 'aria-label': 'Select User' }}
+              style={{
+                height: '36px',
+                padding: '0 12px',
+                fontSize: '14px',
+                border: '1px solid #ccc',
+                borderRadius: '4px',
+                backgroundColor: 'white',
+                cursor: 'pointer',
+              }}
+              disabled={!users.length}
+            >
+              <MenuItem value="" disabled>Select User</MenuItem>
+              {users.map((u) => (
+                <MenuItem key={u.userName} value={u.userName}>
+                  {u.firstName} {u.lastName}
                 </MenuItem>
               ))}
             </Select>
