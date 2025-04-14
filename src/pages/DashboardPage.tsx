@@ -7,12 +7,9 @@ import {
   addDepartment,
   updateDepartment,
   deleteDepartment,
-  Department
+  Department,
 } from '../services/departmentService';
-import {
-  getUsersByDepartment,
-  User
-} from '../services/userService';
+import { getUsersByDepartment, User } from '../services/userService';
 import MenuItem from '@mui/material/MenuItem';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import { useNavigate } from 'react-router-dom';
@@ -77,12 +74,16 @@ const DashboardPage: React.FC = () => {
 
   const handleDeleteDepartment = async () => {
     if (!selectedDept) return;
-    const confirmDelete = window.confirm('Are you sure you want to delete this department?');
+    const confirmDelete = window.confirm(
+      'Are you sure you want to delete this department?'
+    );
     if (!confirmDelete) return;
 
     try {
       await deleteDepartment(parseInt(selectedDept));
-      setDepartments((prev) => prev.filter((d) => d.departmentID !== parseInt(selectedDept)));
+      setDepartments((prev) =>
+        prev.filter((d) => d.departmentID !== parseInt(selectedDept))
+      );
       setSelectedDept('');
       setUsers([]);
     } catch (error) {
@@ -119,7 +120,14 @@ const DashboardPage: React.FC = () => {
 
       {(isAdmin || isManager) && (
         <>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px' }}>
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '10px',
+              marginBottom: '10px',
+            }}
+          >
             <Select
               value={selectedDept}
               onChange={handleSelectChange}
@@ -135,7 +143,9 @@ const DashboardPage: React.FC = () => {
                 cursor: 'pointer',
               }}
             >
-              <MenuItem value="" disabled>Select Department</MenuItem>
+              <MenuItem value="" disabled>
+                Select Department
+              </MenuItem>
               {departments.map((dept) => (
                 <MenuItem key={dept.departmentID} value={dept.departmentID}>
                   {dept.departmentName}
@@ -159,7 +169,9 @@ const DashboardPage: React.FC = () => {
               }}
               disabled={!users.length}
             >
-              <MenuItem value="" disabled>Select User</MenuItem>
+              <MenuItem value="" disabled>
+                Select User
+              </MenuItem>
               {users.map((u) => (
                 <MenuItem key={u.userName} value={u.userName}>
                   {u.firstName} {u.lastName}
@@ -171,7 +183,9 @@ const DashboardPage: React.FC = () => {
             <button
               onClick={() => {
                 if (!selectedDept) return;
-                const dept = departments.find((d) => d.departmentID === parseInt(selectedDept));
+                const dept = departments.find(
+                  (d) => d.departmentID === parseInt(selectedDept)
+                );
                 if (dept) {
                   setEditName(dept.departmentName);
                   setEditing(true);
@@ -230,7 +244,7 @@ const DashboardPage: React.FC = () => {
         </>
       )}
 
-      <TrainingGrid />
+      {selectedDept && <TrainingGrid departmentId={parseInt(selectedDept)} />}
 
       {(isAdmin || isManager) && (
         <div style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
