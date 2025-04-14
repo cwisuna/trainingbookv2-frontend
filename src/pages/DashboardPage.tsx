@@ -2,14 +2,16 @@ import React, { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import TrainingGrid from '../components/TrainingGrid';
 import { hasRole } from '../utils/auth';
+import {
+  fetchDepartments,
+  addDepartment,
+  updateDepartment,
+  deleteDepartment,
+  Department
+} from '../services/departmentService';
 import MenuItem from '@mui/material/MenuItem';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import { useNavigate } from 'react-router-dom';
-
-interface Department {
-  departmentID: number;
-  departmentName: string;
-}
 
 const DashboardPage: React.FC = () => {
   const { user, logout } = useAuth();
@@ -25,14 +27,12 @@ const DashboardPage: React.FC = () => {
   const [editName, setEditName] = useState('');
 
   useEffect(() => {
-    fetchDepartments();
+    loadDepartments();
   }, []);
 
-  const fetchDepartments = async () => {
+  const loadDepartments = async () => {
     try {
-      const response = await fetch('https://localhost:44342/api/departments');
-      if (!response.ok) throw new Error('Failed to fetch departments');
-      const data = await response.json();
+      const data = await fetchDepartments();
       setDepartments(data);
     } catch (error) {
       console.error('Error loading departments:', error);
@@ -45,19 +45,8 @@ const DashboardPage: React.FC = () => {
 
   const handleAddDepartment = async () => {
     if (!newDepartmentName.trim()) return;
-
     try {
-      const response = await fetch('https://localhost:44342/api/departments', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ departmentName: newDepartmentName }),
-      });
-
-      if (!response.ok) throw new Error('Failed to add department');
-
-      const newDept: Department = await response.json();
+      const newDept = await addDepartment(newDepartmentName);
       setDepartments((prev) => [...prev, newDept]);
       setSelectedDept(String(newDept.departmentID));
       setNewDepartmentName('');
@@ -69,28 +58,33 @@ const DashboardPage: React.FC = () => {
 
   const handleDeleteDepartment = async () => {
     if (!selectedDept) return;
-
-    const confirmDelete = window.confirm(
-      'Are you sure you want to delete this department?'
-    );
+    const confirmDelete = window.confirm('Are you sure you want to delete this department?');
     if (!confirmDelete) return;
 
     try {
-      const response = await fetch(
-        `https://localhost:44342/api/departments/${selectedDept}`,
-        {
-          method: 'DELETE',
-        }
-      );
-
-      if (!response.ok) throw new Error('Failed to delete department');
-
-      setDepartments((prev) =>
-        prev.filter((d) => d.departmentID !== parseInt(selectedDept))
-      );
+      await deleteDepartment(parseInt(selectedDept));
+      setDepartments((prev) => prev.filter((d) => d.departmentID !== parseInt(selectedDept)));
       setSelectedDept('');
     } catch (error) {
       console.error('Error deleting department:', error);
+    }
+  };
+
+  const handleUpdateDepartment = async () => {
+    if (!selectedDept || !editName.trim()) return;
+    try {
+      await updateDepartment(parseInt(selectedDept), editName);
+      setDepartments((prev) =>
+        prev.map((d) =>
+          d.departmentID === parseInt(selectedDept)
+            ? { ...d, departmentName: editName }
+            : d
+        )
+      );
+      setEditing(false);
+      setEditName('');
+    } catch (error) {
+      console.error('Error updating department:', error);
     }
   };
 
@@ -99,21 +93,13 @@ const DashboardPage: React.FC = () => {
   return (
     <div style={{ padding: '20px' }}>
       <h2>Welcome, {user.name}</h2>
-
       <button onClick={logout} style={{ marginBottom: '20px' }}>
         Logout
       </button>
 
       {(isAdmin || isManager) && (
         <>
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '10px',
-              marginBottom: '10px',
-            }}
-          >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px' }}>
             <Select
               value={selectedDept}
               onChange={handleSelectChange}
@@ -129,9 +115,7 @@ const DashboardPage: React.FC = () => {
                 cursor: 'pointer',
               }}
             >
-              <MenuItem value="" disabled>
-                Select Department
-              </MenuItem>
+              <MenuItem value="" disabled>Select Department</MenuItem>
               {departments.map((dept) => (
                 <MenuItem key={dept.departmentID} value={dept.departmentID}>
                   {dept.departmentName}
@@ -143,9 +127,7 @@ const DashboardPage: React.FC = () => {
             <button
               onClick={() => {
                 if (!selectedDept) return;
-                const dept = departments.find(
-                  (d) => d.departmentID === parseInt(selectedDept)
-                );
+                const dept = departments.find((d) => d.departmentID === parseInt(selectedDept));
                 if (dept) {
                   setEditName(dept.departmentName);
                   setEditing(true);
@@ -155,11 +137,9 @@ const DashboardPage: React.FC = () => {
             >
               Edit Department
             </button>
-
             <button onClick={handleDeleteDepartment} disabled={!selectedDept}>
               Delete Department
             </button>
-
             <button>Manage Users</button>
             <button>Assign Training Steps</button>
           </div>
@@ -199,41 +179,7 @@ const DashboardPage: React.FC = () => {
                   border: '1px solid #ccc',
                 }}
               />
-              <button
-                onClick={async () => {
-                  if (!selectedDept || !editName.trim()) return;
-                  try {
-                    const response = await fetch(
-                      `https://localhost:44342/api/departments/${selectedDept}`,
-                      {
-                        method: 'PUT',
-                        headers: {
-                          'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({ departmentName: editName }),
-                      }
-                    );
-
-                    if (!response.ok)
-                      throw new Error('Failed to update department');
-
-                    setDepartments((prev) =>
-                      prev.map((d) =>
-                        d.departmentID === parseInt(selectedDept)
-                          ? { ...d, departmentName: editName }
-                          : d
-                      )
-                    );
-
-                    setEditing(false);
-                    setEditName('');
-                  } catch (error) {
-                    console.error('Error updating department:', error);
-                  }
-                }}
-              >
-                Update
-              </button>
+              <button onClick={handleUpdateDepartment}>Update</button>
               <button onClick={() => setEditing(false)}>Cancel</button>
             </div>
           )}
@@ -243,13 +189,7 @@ const DashboardPage: React.FC = () => {
       <TrainingGrid />
 
       {(isAdmin || isManager) && (
-        <div
-          style={{
-            display: 'flex',
-            gap: '10px',
-            marginTop: '20px',
-          }}
-        >
+        <div style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
           <button
             onClick={() => {
               if (!selectedDept) {
