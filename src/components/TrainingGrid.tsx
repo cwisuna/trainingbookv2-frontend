@@ -8,6 +8,7 @@ import {
 
 interface TrainingGridProps {
   departmentId: number;
+  onSelectStep?: (step: TrainingStep) => void;
 }
 
 const columns: GridColDef[] = [
@@ -31,12 +32,12 @@ const columns: GridColDef[] = [
     field: 'dateAdded',
     headerName: 'Date Added',
     width: 150,
-    valueGetter: () => new Date().toLocaleDateString(),
+    valueGetter: () => new Date().toLocaleDateString(), // Consider replacing with real data
   },
 ];
 
-const TrainingGrid: React.FC<TrainingGridProps> = ({ departmentId }) => {
-  const [rows, setRows] = useState<any[]>([]);
+const TrainingGrid: React.FC<TrainingGridProps> = ({ departmentId, onSelectStep }) => {
+  const [rows, setRows] = useState<TrainingStep[]>([]);
 
   useEffect(() => {
     setRows([]);
@@ -60,6 +61,9 @@ const TrainingGrid: React.FC<TrainingGridProps> = ({ departmentId }) => {
       <DataGrid
         rows={rows}
         columns={columns}
+        onRowClick={(params) => {
+          if (onSelectStep) onSelectStep(params.row);
+        }}
         initialState={{
           pagination: {
             paginationModel: { pageSize: 10, page: 0 },

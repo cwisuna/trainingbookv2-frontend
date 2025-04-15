@@ -10,9 +10,15 @@ import {
   Department,
 } from '../services/departmentService';
 import { getUsersByDepartment, User } from '../services/userService';
+import { updateTrainingStep, TrainingStep } from '../services/trainingStepService';
 import MenuItem from '@mui/material/MenuItem';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import { useNavigate } from 'react-router-dom';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
+import TextField from '@mui/material/TextField';
 
 const DashboardPage: React.FC = () => {
   const { user, logout } = useAuth();
@@ -28,6 +34,9 @@ const DashboardPage: React.FC = () => {
   const [showInput, setShowInput] = useState(false);
   const [editing, setEditing] = useState(false);
   const [editName, setEditName] = useState('');
+  const [selectedStep, setSelectedStep] = useState<TrainingStep | null>(null);
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [editFields, setEditFields] = useState<Partial<TrainingStep>>({});
 
   useEffect(() => {
     loadDepartments();
@@ -120,32 +129,15 @@ const DashboardPage: React.FC = () => {
 
       {(isAdmin || isManager) && (
         <>
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '10px',
-              marginBottom: '10px',
-            }}
-          >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px' }}>
             <Select
               value={selectedDept}
               onChange={handleSelectChange}
               displayEmpty
               inputProps={{ 'aria-label': 'Select Department' }}
-              style={{
-                height: '36px',
-                padding: '0 12px',
-                fontSize: '14px',
-                border: '1px solid #ccc',
-                borderRadius: '4px',
-                backgroundColor: 'white',
-                cursor: 'pointer',
-              }}
+              style={{ height: '36px', padding: '0 12px', fontSize: '14px', border: '1px solid #ccc', borderRadius: '4px', backgroundColor: 'white', cursor: 'pointer' }}
             >
-              <MenuItem value="" disabled>
-                Select Department
-              </MenuItem>
+              <MenuItem value="" disabled>Select Department</MenuItem>
               {departments.map((dept) => (
                 <MenuItem key={dept.departmentID} value={dept.departmentID}>
                   {dept.departmentName}
@@ -158,20 +150,10 @@ const DashboardPage: React.FC = () => {
               onChange={handleUserChange}
               displayEmpty
               inputProps={{ 'aria-label': 'Select User' }}
-              style={{
-                height: '36px',
-                padding: '0 12px',
-                fontSize: '14px',
-                border: '1px solid #ccc',
-                borderRadius: '4px',
-                backgroundColor: 'white',
-                cursor: 'pointer',
-              }}
+              style={{ height: '36px', padding: '0 12px', fontSize: '14px', border: '1px solid #ccc', borderRadius: '4px', backgroundColor: 'white', cursor: 'pointer' }}
               disabled={!users.length}
             >
-              <MenuItem value="" disabled>
-                Select User
-              </MenuItem>
+              <MenuItem value="" disabled>Select User</MenuItem>
               {users.map((u) => (
                 <MenuItem key={u.userName} value={u.userName}>
                   {u.firstName} {u.lastName}
@@ -183,9 +165,7 @@ const DashboardPage: React.FC = () => {
             <button
               onClick={() => {
                 if (!selectedDept) return;
-                const dept = departments.find(
-                  (d) => d.departmentID === parseInt(selectedDept)
-                );
+                const dept = departments.find((d) => d.departmentID === parseInt(selectedDept));
                 if (dept) {
                   setEditName(dept.departmentName);
                   setEditing(true);
@@ -209,13 +189,7 @@ const DashboardPage: React.FC = () => {
                 value={newDepartmentName}
                 onChange={(e) => setNewDepartmentName(e.target.value)}
                 placeholder="New Department Name"
-                style={{
-                  height: '30px',
-                  fontSize: '14px',
-                  padding: '4px 8px',
-                  borderRadius: '4px',
-                  border: '1px solid #ccc',
-                }}
+                style={{ height: '30px', fontSize: '14px', padding: '4px 8px', borderRadius: '4px', border: '1px solid #ccc' }}
               />
               <button onClick={handleAddDepartment}>Create</button>
               <button onClick={() => setShowInput(false)}>Cancel</button>
@@ -229,13 +203,7 @@ const DashboardPage: React.FC = () => {
                 value={editName}
                 onChange={(e) => setEditName(e.target.value)}
                 placeholder="Edit Department Name"
-                style={{
-                  height: '30px',
-                  fontSize: '14px',
-                  padding: '4px 8px',
-                  borderRadius: '4px',
-                  border: '1px solid #ccc',
-                }}
+                style={{ height: '30px', fontSize: '14px', padding: '4px 8px', borderRadius: '4px', border: '1px solid #ccc' }}
               />
               <button onClick={handleUpdateDepartment}>Update</button>
               <button onClick={() => setEditing(false)}>Cancel</button>
@@ -244,7 +212,12 @@ const DashboardPage: React.FC = () => {
         </>
       )}
 
-      {selectedDept && <TrainingGrid departmentId={parseInt(selectedDept)} />}
+      {selectedDept && (
+        <TrainingGrid
+          departmentId={parseInt(selectedDept)}
+          onSelectStep={(step) => setSelectedStep(step)}
+        />
+      )}
 
       {(isAdmin || isManager) && (
         <div style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
@@ -259,10 +232,84 @@ const DashboardPage: React.FC = () => {
           >
             Add Training Step
           </button>
-          <button>Edit Training Step</button>
+          <button
+            onClick={() => {
+              if (!selectedStep) {
+                alert('Select a training step first');
+                return;
+              }
+              setEditFields(selectedStep);
+              setEditModalOpen(true);
+            }}
+            disabled={!selectedStep}
+          >
+            Edit Training Step
+          </button>
           <button>Delete Training Step</button>
         </div>
       )}
+
+      <Dialog open={editModalOpen} onClose={() => setEditModalOpen(false)}>
+        <DialogTitle>Edit Training Step</DialogTitle>
+        <DialogContent style={{ display: 'flex', flexDirection: 'column', gap: 12, marginTop: 10 }}>
+          <TextField
+            label="Step"
+            type="number"
+            value={editFields.step ?? ''}
+            onChange={(e) => setEditFields({ ...editFields, step: parseInt(e.target.value) })}
+          />
+          <TextField
+            label="Item"
+            value={editFields.item ?? ''}
+            onChange={(e) => setEditFields({ ...editFields, item: e.target.value })}
+          />
+          <TextField
+            label="Description"
+            multiline
+            value={editFields.description ?? ''}
+            onChange={(e) => setEditFields({ ...editFields, description: e.target.value })}
+          />
+          <TextField
+            label="Trainee Expectation"
+            multiline
+            value={editFields.traineeExpectation ?? ''}
+            onChange={(e) => setEditFields({ ...editFields, traineeExpectation: e.target.value })}
+          />
+          <TextField
+            label="Training Duration"
+            type="number"
+            value={editFields.trainingDuration ?? ''}
+            onChange={(e) => setEditFields({ ...editFields, trainingDuration: parseInt(e.target.value) })}
+          />
+          <TextField
+            label="File Path"
+            value={editFields.filePath ?? ''}
+            onChange={(e) => setEditFields({ ...editFields, filePath: e.target.value })}
+          />
+        </DialogContent>
+        <DialogActions>
+          <button onClick={() => setEditModalOpen(false)}>Cancel</button>
+          <button
+            onClick={async () => {
+              if (!selectedStep) return;
+              try {
+                await updateTrainingStep(selectedStep.stepID, {
+                  ...selectedStep,
+                  ...editFields,
+                  lastModifiedBy: user.uid, // Make sure this is the correct field name
+                });
+                alert('Training step updated!');
+                setEditModalOpen(false);
+              } catch (err) {
+                console.error('Update failed:', err);
+                alert('Failed to update step.');
+              }
+            }}
+          >
+            Save
+          </button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 };
