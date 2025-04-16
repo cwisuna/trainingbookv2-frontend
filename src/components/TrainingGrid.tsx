@@ -5,10 +5,12 @@ import {
   TrainingStep,
   getFormattedStepsByDepartment,
 } from '../services/trainingStepService';
+import { on } from 'events';
 
 interface TrainingGridProps {
   departmentId: number;
   onSelectStep?: (step: TrainingStep) => void;
+  onStepsLoaded?: (steps: TrainingStep[]) => void;
 }
 
 const columns: GridColDef[] = [
@@ -39,6 +41,7 @@ const columns: GridColDef[] = [
 const TrainingGrid: React.FC<TrainingGridProps> = ({
   departmentId,
   onSelectStep,
+  onStepsLoaded,
 }) => {
   const [rows, setRows] = useState<TrainingStep[]>([]);
 
@@ -51,6 +54,9 @@ const TrainingGrid: React.FC<TrainingGridProps> = ({
       try {
         const formattedRows = await getFormattedStepsByDepartment(departmentId);
         setRows(formattedRows);
+        if(onStepsLoaded){
+          onStepsLoaded(formattedRows);
+        }
       } catch (err) {
         console.error('Error loading training steps:', err);
       }

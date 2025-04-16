@@ -22,6 +22,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import TextField from '@mui/material/TextField';
+import { createTrainingBookWithSteps } from '../services/trainingStepService';
 
 const DashboardPage: React.FC = () => {
   const { user, logout } = useAuth();
@@ -40,6 +41,7 @@ const DashboardPage: React.FC = () => {
   const [selectedStep, setSelectedStep] = useState<TrainingStep | null>(null);
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [editFields, setEditFields] = useState<Partial<TrainingStep>>({});
+  const [allStepIds, setAllStepIds] = useState<number[]>([]);
 
   useEffect(() => {
     loadDepartments();
@@ -259,6 +261,7 @@ const DashboardPage: React.FC = () => {
         <TrainingGrid
           departmentId={parseInt(selectedDept)}
           onSelectStep={(step) => setSelectedStep(step)}
+          onStepsLoaded={(steps) => setAllStepIds(steps.map((s) => s.stepID))}
         />
       )}
 
@@ -289,7 +292,33 @@ const DashboardPage: React.FC = () => {
             Edit Training Step
           </button>
           <button>Delete Training Step</button>
-          <button>Create Training Book</button>
+          <button
+            onClick={async () => {
+              if (!selectedUser || !selectedDept) {
+                alert('Please select both a user and department.');
+                return;
+              }
+
+              if (!allStepIds.length) {
+                alert('No training steps found for this department.');
+                return;
+              }
+
+              try {
+                await createTrainingBookWithSteps(
+                  parseInt(selectedUser),
+                  parseInt(selectedDept),
+                  allStepIds
+                );
+                alert('Training book created successfully!');
+              } catch (err) {
+                console.error('Error creating training book:', err);
+                alert('Failed to create training book.');
+              }
+            }}
+          >
+            Create Training Book
+          </button>
         </div>
       )}
 

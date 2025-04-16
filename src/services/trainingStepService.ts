@@ -103,3 +103,24 @@ export const deleteTrainingStep = async (stepId: number): Promise<void> => {
     throw new Error(`Failed to delete training step: ${res.status}`);
   }
 };
+
+export async function createTrainingBookWithSteps(userId: number, departmentId: number, stepIds: number[]) {
+  const response = await fetch('https://localhost:44342/api/UserTrainingBooks/create-with-steps', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      userID: userId,
+      departmentID: departmentId,
+      stepIDs: stepIds
+    })
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(errorText);
+  }
+
+  return await response.json();
+}
