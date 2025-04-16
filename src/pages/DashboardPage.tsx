@@ -211,7 +211,6 @@ const DashboardPage: React.FC = () => {
               Delete Department
             </button>
             <button>Manage Users</button>
-            <button>Assign Training Steps</button>
           </div>
 
           {showInput && (
@@ -290,6 +289,7 @@ const DashboardPage: React.FC = () => {
             Edit Training Step
           </button>
           <button>Delete Training Step</button>
+          <button>Create Training Book</button>
         </div>
       )}
 
