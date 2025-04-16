@@ -36,7 +36,10 @@ const columns: GridColDef[] = [
   },
 ];
 
-const TrainingGrid: React.FC<TrainingGridProps> = ({ departmentId, onSelectStep }) => {
+const TrainingGrid: React.FC<TrainingGridProps> = ({
+  departmentId,
+  onSelectStep,
+}) => {
   const [rows, setRows] = useState<TrainingStep[]>([]);
 
   useEffect(() => {
@@ -61,6 +64,7 @@ const TrainingGrid: React.FC<TrainingGridProps> = ({ departmentId, onSelectStep 
       <DataGrid
         rows={rows}
         columns={columns}
+        getRowId={(row) => row.stepID} // <-- use DB stepID as unique row ID
         onRowClick={(params) => {
           if (onSelectStep) onSelectStep(params.row);
         }}
