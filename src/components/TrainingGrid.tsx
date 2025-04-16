@@ -64,7 +64,7 @@ const TrainingGrid: React.FC<TrainingGridProps> = ({
       <DataGrid
         rows={rows}
         columns={columns}
-        getRowId={(row) => row.stepID} // <-- use DB stepID as unique row ID
+        getRowId={(row) => row.stepID}
         onRowClick={(params) => {
           if (onSelectStep) onSelectStep(params.row);
         }}

@@ -82,13 +82,24 @@ export const updateTrainingStep = async (
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
-      ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
     },
     body: JSON.stringify(updatedStep),
   });
 
   if (!res.ok) {
     const errorText = await res.text();
-    throw new Error(`Failed to update training step: ${res.status} - ${errorText}`);
+    throw new Error(
+      `Failed to update training step: ${res.status} - ${errorText}`
+    );
+  }
+};
+
+export const deleteTrainingStep = async (stepId: number): Promise<void> => {
+  const res = await fetch(`${API_BASE}/${stepId}`, {
+    method: 'DELETE',
+  });
+  if (!res.ok) {
+    throw new Error(`Failed to delete training step: ${res.status}`);
   }
 };
