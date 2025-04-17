@@ -1,3 +1,4 @@
+// interface representing a training step object
 export interface TrainingStep {
   stepID: number;
   step: number;
@@ -12,8 +13,10 @@ export interface TrainingStep {
   lastModifiedBy: number;
 }
 
+//url for the training step endpoints
 const API_BASE = 'https://localhost:44342/api/TrainingSteps';
 
+//gets training steps by department and formats them for the MUI grid
 export const getFormattedStepsByDepartment = async (
   departmentId: number
 ): Promise<any[]> => {
@@ -28,6 +31,7 @@ export const getFormattedStepsByDepartment = async (
   }));
 };
 
+//get all training steps in DB
 export const fetchAllTrainingSteps = async (): Promise<TrainingStep[]> => {
   const res = await fetch(API_BASE);
   if (!res.ok) {
@@ -36,6 +40,7 @@ export const fetchAllTrainingSteps = async (): Promise<TrainingStep[]> => {
   return await res.json();
 };
 
+//get training steps by department
 export const fetchTrainingStepsByDepartment = async (
   departmentId: number
 ): Promise<TrainingStep[]> => {
@@ -46,6 +51,7 @@ export const fetchTrainingStepsByDepartment = async (
   return await res.json();
 };
 
+// deletes selected training step by id
 export const DeleteTrainingStep = async (stepId: number): Promise<void> => {
   const res = await fetch(`${API_BASE}/${stepId}`, {
     method: 'DELETE',
@@ -55,6 +61,7 @@ export const DeleteTrainingStep = async (stepId: number): Promise<void> => {
   }
 };
 
+//gets a single training step by id
 export const getTrainingStepById = async (
   id: number,
   token?: string
@@ -73,6 +80,7 @@ export const getTrainingStepById = async (
   return await res.json();
 };
 
+//updates a training step that was selected by its id
 export const updateTrainingStep = async (
   id: number,
   updatedStep: TrainingStep,
@@ -95,6 +103,7 @@ export const updateTrainingStep = async (
   }
 };
 
+//deletes a training step by id. may be redundant with DeleteTrainingStep function?? 
 export const deleteTrainingStep = async (stepId: number): Promise<void> => {
   const res = await fetch(`${API_BASE}/${stepId}`, {
     method: 'DELETE',
@@ -104,6 +113,7 @@ export const deleteTrainingStep = async (stepId: number): Promise<void> => {
   }
 };
 
+//creates a training book with a list of training steps for a specific user and department
 export async function createTrainingBookWithSteps(userId: number, departmentId: number, stepIds: number[]) {
   const response = await fetch('https://localhost:44342/api/UserTrainingBooks/create-with-steps', {
     method: 'POST',
