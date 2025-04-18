@@ -146,20 +146,18 @@ const AddTrainingStepPage: React.FC = () => {
             style={inputStyle}
             readOnly
           />
-          <input
-            type="file"
-            id="filePicker"
-            style={{ display: 'none' }}
-            onChange={(e) => {
-              if (e.target.files && e.target.files.length > 0) {
-                const file = e.target.files[0];
-                setForm({ ...form, filePath: file.name }); 
-              }
-            }}
-          />
           <button
             type="button"
-            onClick={() => document.getElementById('filePicker')?.click()}
+            onClick={async () => {
+              if (window.electronAPI?.selectFile) {
+                const filePath = await window.electronAPI.selectFile();
+                if (filePath) {
+                  setForm({ ...form, filePath });
+                }
+              } else {
+                alert('File selection is not available in this environment.');
+              }
+            }}
             style={{
               ...buttonStyle,
               marginTop: '8px',

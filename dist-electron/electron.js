@@ -25,19 +25,30 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const electron_1 = require("electron");
 const path = __importStar(require("path"));
+const electron_2 = require("electron");
 function createWindow() {
     const win = new electron_1.BrowserWindow({
         width: 1280,
         height: 800,
         webPreferences: {
             contextIsolation: true,
-            preload: path.join(__dirname, 'preload.js'),
+            preload: path.join(__dirname, '../preload.js'),
             webSecurity: false,
         },
     });
     win.loadURL('http://localhost:3000');
 }
 electron_1.app.whenReady().then(createWindow);
+electron_2.ipcMain.handle('dialog:openFile', async () => {
+    const focusedWindow = electron_1.BrowserWindow.getFocusedWindow();
+    const filePaths = await electron_2.dialog.showOpenDialog(focusedWindow, {
+        properties: ['openFile'],
+    });
+    if (!filePaths || filePaths.length === 0) {
+        return null;
+    }
+    return filePaths[0];
+});
 electron_1.app.on('window-all-closed', () => {
     if (process.platform !== 'darwin')
         electron_1.app.quit();
