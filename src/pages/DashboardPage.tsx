@@ -304,9 +304,15 @@ const DashboardPage: React.FC = () => {
                 return;
               }
 
+              const userObj = users.find((u) => u.userName === selectedUser);
+              if (!userObj) {
+                alert('Selected user not found.');
+                return;
+              }
+
               try {
                 await createTrainingBookWithSteps(
-                  parseInt(selectedUser),
+                  userObj.userID,
                   parseInt(selectedDept),
                   allStepIds
                 );
