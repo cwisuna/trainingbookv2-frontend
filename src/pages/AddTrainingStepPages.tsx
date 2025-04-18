@@ -144,7 +144,30 @@ const AddTrainingStepPage: React.FC = () => {
             value={form.filePath}
             onChange={(e) => setForm({ ...form, filePath: e.target.value })}
             style={inputStyle}
+            readOnly
           />
+          <input
+            type="file"
+            id="filePicker"
+            style={{ display: 'none' }}
+            onChange={(e) => {
+              if (e.target.files && e.target.files.length > 0) {
+                const file = e.target.files[0];
+                setForm({ ...form, filePath: file.name }); 
+              }
+            }}
+          />
+          <button
+            type="button"
+            onClick={() => document.getElementById('filePicker')?.click()}
+            style={{
+              ...buttonStyle,
+              marginTop: '8px',
+              backgroundColor: '#28a745',
+            }}
+          >
+            Add File Path
+          </button>
         </div>
 
         <div style={{ display: 'flex', gap: '20px', alignItems: 'center' }}>

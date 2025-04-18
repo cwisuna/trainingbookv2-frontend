@@ -28,7 +28,30 @@ const columns: GridColDef[] = [
     width: 200,
   },
   { field: 'trainingDuration', headerName: 'Duration (hrs)', width: 130 },
-  { field: 'filePath', headerName: 'Reference', width: 150 },
+  {
+    field: 'filePath',
+    headerName: 'Reference',
+    width: 150,
+    renderCell: (params) => {
+      const filePath = params.value;
+  
+      return filePath ? (
+        <button
+          onClick={() => window.electronAPI?.openFile(filePath)}
+          style={{
+            background: 'none',
+            border: 'none',
+            color: '#007bff',
+            textDecoration: 'underline',
+            cursor: 'pointer',
+          }}
+        >
+          Open File
+        </button>
+      ) : null;
+    },
+  }
+  ,
   { field: 'lastModifiedBy', headerName: 'Added By', width: 120 },
   {
     field: 'dateAdded',
