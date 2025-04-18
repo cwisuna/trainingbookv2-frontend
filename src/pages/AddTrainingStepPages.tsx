@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 interface TrainingStepForm {
@@ -14,6 +14,10 @@ interface TrainingStepForm {
 }
 
 const AddTrainingStepPage: React.FC = () => {
+  useEffect(() =>{
+    console.log('electronAPI', window.electronAPI); //delete later
+  });
+
   const location = useLocation();
   const navigate = useNavigate();
   const departmentID = new URLSearchParams(location.search).get('departmentID');

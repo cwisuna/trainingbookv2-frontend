@@ -3,12 +3,15 @@ import * as path from 'path';
 import { ipcMain, dialog, OpenDialogReturnValue } from 'electron';
 
 function createWindow() {
+  const preloadPath = path.join(__dirname, '../preload.js'); //delete later
+  console.log('🔍 Preload path:', preloadPath); //delete later 
+
   const win = new BrowserWindow({
     width: 1280,
     height: 800,
     webPreferences: {
       contextIsolation: true,
-      preload: path.join(__dirname, '../preload.js'),
+      preload: preloadPath,
       webSecurity: false,
     },
   });
