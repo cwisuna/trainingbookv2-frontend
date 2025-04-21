@@ -48,25 +48,19 @@ const AddUsersPage: React.FC = () => {
       return;
     }
 
+    const payload = {
+      ...form,
+      departmentID: selectedDepartment,
+    };
+
     try {
       const registerResponse = await fetch('https://localhost:44342/api/Auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form),
+        body: JSON.stringify(payload),
       });
 
       if (!registerResponse.ok) throw new Error('Failed to register user');
-
-      const { userId } = await registerResponse.json();
-
-      const assignResponse = await fetch(
-        `https://localhost:44342/api/Users/${userId}/assign-department/${selectedDepartment}`,
-        {
-          method: 'PUT',
-        }
-      );
-
-      if (!assignResponse.ok) throw new Error('Failed to assign department');
 
       alert('User added and assigned!');
       navigate(-1);
@@ -106,7 +100,7 @@ const AddUsersPage: React.FC = () => {
 
         <select
           value={selectedDepartment ?? ''}
-          onChange={(e) => setSelectedDepartment(parseInt(e.target.value))}
+          onChange={(e) => setSelectedDepartment(Number(e.target.value))}
         >
           <option value="">Select Department</option>
           {departments.map((dept) => (
