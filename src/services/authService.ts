@@ -1,4 +1,4 @@
-export async function loginUser(username: string, password: string): Promise<{ token: string }> {
+export async function LoginUser(username: string, password: string): Promise<{ token: string }> {
     const res = await fetch('https://localhost:44342/api/Auth/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },

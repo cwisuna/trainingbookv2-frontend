@@ -5,13 +5,13 @@ export interface Department {
 
 const baseUrl = 'https://localhost:44342/api/departments';
 
-export const fetchDepartments = async (): Promise<Department[]> => {
+export const GetDepartments = async (): Promise<Department[]> => {
   const response = await fetch(baseUrl);
   if (!response.ok) throw new Error('Failed to fetch departments');
   return response.json();
 };
 
-export const addDepartment = async (
+export const AddDepartment = async (
   departmentName: string
 ): Promise<Department> => {
   const response = await fetch(baseUrl, {
@@ -26,7 +26,7 @@ export const addDepartment = async (
   return response.json();
 };
 
-export const updateDepartment = async (
+export const UpdateDepartment = async (
   departmentID: number,
   departmentName: string
 ): Promise<void> => {
@@ -41,7 +41,7 @@ export const updateDepartment = async (
   if (!response.ok) throw new Error('Failed to update department');
 };
 
-export const deleteDepartment = async (departmentID: number): Promise<void> => {
+export const DeleteDepartment = async (departmentID: number): Promise<void> => {
   const response = await fetch(`${baseUrl}/${departmentID}`, {
     method: 'DELETE',
   });

@@ -3,15 +3,15 @@ import { useAuth } from '../context/AuthContext';
 import TrainingGrid from '../components/TrainingGrid';
 import { hasRole } from '../utils/auth';
 import {
-  fetchDepartments,
-  addDepartment,
-  updateDepartment,
-  deleteDepartment,
+  GetDepartments,
+  AddDepartment,
+  UpdateDepartment,
+  DeleteDepartment,
   Department,
 } from '../services/departmentService';
-import { getUsersByDepartment, User } from '../services/userService';
+import { GetUsersByDepartment, User } from '../services/userService';
 import {
-  updateTrainingStep,
+  UpdateTrainingStep,
   TrainingStep,
 } from '../services/trainingStepService';
 import MenuItem from '@mui/material/MenuItem';
@@ -22,7 +22,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import TextField from '@mui/material/TextField';
-import { createTrainingBookWithSteps } from '../services/trainingStepService';
+import { CreateTrainingBookWithSteps } from '../services/trainingStepService';
 
 const DashboardPage: React.FC = () => {
   const { user, logout } = useAuth();
@@ -49,7 +49,7 @@ const DashboardPage: React.FC = () => {
 
   const loadDepartments = async () => {
     try {
-      const data = await fetchDepartments();
+      const data = await GetDepartments();
       setDepartments(data);
     } catch (error) {
       console.error('Error loading departments:', error);
@@ -61,7 +61,7 @@ const DashboardPage: React.FC = () => {
     setSelectedDept(deptId);
     setSelectedUser('');
     try {
-      const fetchedUsers = await getUsersByDepartment(parseInt(deptId));
+      const fetchedUsers = await GetUsersByDepartment(parseInt(deptId));
       setUsers(fetchedUsers);
     } catch (error) {
       console.error('Error fetching users:', error);
@@ -76,7 +76,7 @@ const DashboardPage: React.FC = () => {
   const handleAddDepartment = async () => {
     if (!newDepartmentName.trim()) return;
     try {
-      const newDept = await addDepartment(newDepartmentName);
+      const newDept = await AddDepartment(newDepartmentName);
       setDepartments((prev) => [...prev, newDept]);
       setSelectedDept(String(newDept.departmentID));
       setNewDepartmentName('');
@@ -94,7 +94,7 @@ const DashboardPage: React.FC = () => {
     if (!confirmDelete) return;
 
     try {
-      await deleteDepartment(parseInt(selectedDept));
+      await DeleteDepartment(parseInt(selectedDept));
       setDepartments((prev) =>
         prev.filter((d) => d.departmentID !== parseInt(selectedDept))
       );
@@ -108,7 +108,7 @@ const DashboardPage: React.FC = () => {
   const handleUpdateDepartment = async () => {
     if (!selectedDept || !editName.trim()) return;
     try {
-      await updateDepartment(parseInt(selectedDept), editName);
+      await UpdateDepartment(parseInt(selectedDept), editName);
       setDepartments((prev) =>
         prev.map((d) =>
           d.departmentID === parseInt(selectedDept)
@@ -311,7 +311,7 @@ const DashboardPage: React.FC = () => {
               }
 
               try {
-                await createTrainingBookWithSteps(
+                await CreateTrainingBookWithSteps(
                   userObj.userID,
                   parseInt(selectedDept),
                   allStepIds
@@ -408,7 +408,7 @@ const DashboardPage: React.FC = () => {
             onClick={async () => {
               if (!selectedStep) return;
               try {
-                await updateTrainingStep(selectedStep.stepID, {
+                await UpdateTrainingStep(selectedStep.stepID, {
                   ...selectedStep,
                   ...editFields,
                   lastModifiedBy: user.uid, // Make sure this is the correct field name

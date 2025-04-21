@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import {
-  fetchTrainingStepsByDepartment,
+  GetTrainingStepsByDepartment,
   TrainingStep,
-  getFormattedStepsByDepartment,
+  GetFormattedStepsByDepartment,
 } from '../services/trainingStepService';
 import { on } from 'events';
 
@@ -34,7 +34,7 @@ const columns: GridColDef[] = [
     width: 150,
     renderCell: (params) => {
       const filePath = params.value;
-  
+
       return filePath ? (
         <button
           onClick={() => window.electronAPI?.openFile(filePath)}
@@ -50,8 +50,7 @@ const columns: GridColDef[] = [
         </button>
       ) : null;
     },
-  }
-  ,
+  },
   { field: 'lastModifiedBy', headerName: 'Added By', width: 120 },
   {
     field: 'dateAdded',
@@ -75,9 +74,9 @@ const TrainingGrid: React.FC<TrainingGridProps> = ({
 
     const loadSteps = async () => {
       try {
-        const formattedRows = await getFormattedStepsByDepartment(departmentId);
+        const formattedRows = await GetFormattedStepsByDepartment(departmentId);
         setRows(formattedRows);
-        if(onStepsLoaded){
+        if (onStepsLoaded) {
           onStepsLoaded(formattedRows);
         }
       } catch (err) {
