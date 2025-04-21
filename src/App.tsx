@@ -4,6 +4,7 @@ import LoginPage from "./pages/LoginPage";
 import DashboardPage from "./pages/DashboardPage";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import AddTrainingStepPage from "./pages/AddTrainingStepPages";
+import AddUsersPage from "./pages/AddUsersPage";
 
 const PrivateRoute = ({ children }: { children: JSX.Element }) => {
   const { token } = useAuth();
@@ -18,6 +19,7 @@ const App = () => {
           <Route path="/" element={<LoginPage />} />
           <Route path="/dashboard" element={<PrivateRoute><DashboardPage /></PrivateRoute>} />
           <Route path="/add-training-step" element={<AddTrainingStepPage />} />
+          <Route path="/add-user" element={<AddUsersPage/>} />
         </Routes>
       </Router>
     </AuthProvider>

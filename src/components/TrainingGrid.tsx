@@ -11,6 +11,7 @@ interface TrainingGridProps {
   departmentId: number;
   onSelectStep?: (step: TrainingStep) => void;
   onStepsLoaded?: (steps: TrainingStep[]) => void;
+  userRole?: string[];
 }
 
 const columns: GridColDef[] = [

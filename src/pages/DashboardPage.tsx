@@ -130,6 +130,10 @@ const DashboardPage: React.FC = () => {
     }
   };
 
+  const handleManageUserClick = () => {
+    navigate('/add-user');
+  };
+
   if (!user) return <p>Loading...</p>;
 
   return (
@@ -219,7 +223,7 @@ const DashboardPage: React.FC = () => {
             <button onClick={handleDeleteDepartment} disabled={!selectedDept}>
               Delete Department
             </button>
-            <button>Manage Users</button>
+            <button onClick={handleManageUserClick}>Manage Users</button>
           </div>
 
           {showInput && (
@@ -269,6 +273,7 @@ const DashboardPage: React.FC = () => {
           departmentId={parseInt(selectedDept)}
           onSelectStep={(step) => setSelectedStep(step)}
           onStepsLoaded={(steps) => setAllStepIds(steps.map((s) => s.stepID))}
+          userRole={user.role} // Pass the user role to the TrainingGrid component
         />
       )}
 
