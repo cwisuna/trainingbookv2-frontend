@@ -142,7 +142,7 @@ const AddTrainingStepPage: React.FC = () => {
         </div>
 
         <div>
-          <label>File Path (optional):</label>
+          <label>Reference (optional):</label>
           <input
             type="text"
             value={form.filePath}
@@ -168,7 +168,7 @@ const AddTrainingStepPage: React.FC = () => {
               backgroundColor: '#28a745',
             }}
           >
-            Add File Path
+            Add Reference
           </button>
         </div>
 
