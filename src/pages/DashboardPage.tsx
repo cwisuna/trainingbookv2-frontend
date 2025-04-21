@@ -47,6 +47,21 @@ const DashboardPage: React.FC = () => {
     loadDepartments();
   }, []);
 
+  useEffect(() => {
+    if(selectedDept) {
+      const getUsers = async () => {
+        try {
+          const fetchedUsers = await GetUsersByDepartment(parseInt(selectedDept));
+          setUsers(fetchedUsers);
+        } catch(error) {
+          console.error('Error fetching users:', error);
+          setUsers([]);
+        }
+      }
+      getUsers();
+    }
+  }, [selectedDept]);
+
   const loadDepartments = async () => {
     try {
       const data = await GetDepartments();
@@ -56,17 +71,9 @@ const DashboardPage: React.FC = () => {
     }
   };
 
-  const handleSelectChange = async (event: SelectChangeEvent) => {
-    const deptId = event.target.value;
-    setSelectedDept(deptId);
+  const handleSelectChange = (event: SelectChangeEvent) => {
+    setSelectedDept(event.target.value);
     setSelectedUser('');
-    try {
-      const fetchedUsers = await GetUsersByDepartment(parseInt(deptId));
-      setUsers(fetchedUsers);
-    } catch (error) {
-      console.error('Error fetching users:', error);
-      setUsers([]);
-    }
   };
 
   const handleUserChange = (event: SelectChangeEvent) => {
