@@ -3,8 +3,8 @@ export {};
 declare global {
   interface Window {
     electronAPI?: {
-      openFile: (filePath: string) => void;
       selectFile: () => Promise<string | null>;
+      openFile: (filePath: string) => Promise<string>;
     };
   }
 }
