@@ -24,7 +24,9 @@ const AddUsersPage: React.FC = () => {
   });
 
   const [departments, setDepartments] = useState<Department[]>([]);
-  const [selectedDepartment, setSelectedDepartment] = useState<number | null>(null);
+  const [selectedDepartment, setSelectedDepartment] = useState<number | null>(
+    null
+  );
 
   useEffect(() => {
     const fetchDepartments = async () => {
@@ -54,11 +56,14 @@ const AddUsersPage: React.FC = () => {
     };
 
     try {
-      const registerResponse = await fetch('https://localhost:44342/api/Auth/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      });
+      const registerResponse = await fetch(
+        'https://localhost:44342/api/Auth/register',
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        }
+      );
 
       if (!registerResponse.ok) throw new Error('Failed to register user');
 
@@ -70,37 +75,55 @@ const AddUsersPage: React.FC = () => {
   };
 
   return (
-    <div>
-      <h1>Add User</h1>
-      <form onSubmit={handleSubmit}>
+    <div
+      style={{
+        padding: '30px',
+        maxWidth: '600px',
+        margin: '0 auto',
+        backgroundColor: '#f9f9f9',
+        borderRadius: '12px',
+        boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+      }}
+    >
+      <h2 style={{ marginBottom: '20px' }}>Add New User</h2>
+
+      <form
+        onSubmit={handleSubmit}
+        style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}
+      >
         <input
           type="text"
           placeholder="First Name"
           value={form.firstName}
           onChange={(e) => setForm({ ...form, firstName: e.target.value })}
+          style={inputStyle}
         />
         <input
           type="text"
           placeholder="Last Name"
           value={form.lastName}
           onChange={(e) => setForm({ ...form, lastName: e.target.value })}
+          style={inputStyle}
         />
         <input
           type="text"
           placeholder="Username"
           value={form.username}
           onChange={(e) => setForm({ ...form, username: e.target.value })}
+          style={inputStyle}
         />
         <input
           type="password"
           placeholder="Password"
           value={form.password}
           onChange={(e) => setForm({ ...form, password: e.target.value })}
+          style={inputStyle}
         />
 
         <select
           value={selectedDepartment ?? ''}
           onChange={(e) => setSelectedDepartment(Number(e.target.value))}
+          style={inputStyle}
         >
           <option value="">Select Department</option>
           {departments.map((dept) => (
@@ -110,10 +133,43 @@ const AddUsersPage: React.FC = () => {
           ))}
         </select>
 
-        <button type="submit">Add User</button>
+        <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
+          <button type="submit" style={buttonStyle}>
+            Add User
+          </button>
+          <button
+            type="button"
+            onClick={() => navigate(-1)}
+            style={cancelButtonStyle}
+          >
+            Cancel
+          </button>
+        </div>
       </form>
     </div>
   );
+};
+
+const inputStyle: React.CSSProperties = {
+  width: '100%',
+  padding: '8px',
+  fontSize: '14px',
+  borderRadius: '6px',
+  border: '1px solid #ccc',
+};
+
+const buttonStyle: React.CSSProperties = {
+  padding: '8px 20px',
+  backgroundColor: '#007bff',
+  color: '#fff',
+  border: 'none',
+  borderRadius: '6px',
+  cursor: 'pointer',
+};
+
+const cancelButtonStyle: React.CSSProperties = {
+  ...buttonStyle,
+  backgroundColor: '#6c757d',
 };
 
 export default AddUsersPage;

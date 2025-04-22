@@ -14,7 +14,7 @@ interface TrainingStepForm {
 }
 
 const AddTrainingStepPage: React.FC = () => {
-  useEffect(() =>{
+  useEffect(() => {
     console.log('electronAPI', window.electronAPI); //delete later
   });
 
