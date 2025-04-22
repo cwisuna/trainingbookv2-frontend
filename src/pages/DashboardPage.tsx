@@ -50,16 +50,18 @@ const DashboardPage: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    if(selectedDept) {
+    if (selectedDept) {
       const getUsers = async () => {
         try {
-          const fetchedUsers = await GetUsersByDepartment(parseInt(selectedDept));
+          const fetchedUsers = await GetUsersByDepartment(
+            parseInt(selectedDept)
+          );
           setUsers(fetchedUsers);
-        } catch(error) {
+        } catch (error) {
           console.error('Error fetching users:', error);
           setUsers([]);
         }
-      }
+      };
       getUsers();
     }
   }, [selectedDept]);
@@ -144,135 +146,139 @@ const DashboardPage: React.FC = () => {
       <button onClick={logout} style={{ marginBottom: '20px' }}>
         Logout
       </button>
-        <>
-          <div
+      <>
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '10px',
+            marginBottom: '10px',
+          }}
+        >
+          <Select
+            value={selectedDept}
+            onChange={handleSelectChange}
+            displayEmpty
+            inputProps={{ 'aria-label': 'Select Department' }}
             style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '10px',
-              marginBottom: '10px',
+              height: '36px',
+              padding: '0 12px',
+              fontSize: '14px',
+              border: '1px solid #ccc',
+              borderRadius: '4px',
+              backgroundColor: 'white',
+              cursor: 'pointer',
             }}
           >
-            <Select
-              value={selectedDept}
-              onChange={handleSelectChange}
-              displayEmpty
-              inputProps={{ 'aria-label': 'Select Department' }}
-              style={{
-                height: '36px',
-                padding: '0 12px',
-                fontSize: '14px',
-                border: '1px solid #ccc',
-                borderRadius: '4px',
-                backgroundColor: 'white',
-                cursor: 'pointer',
-              }}
-            >
-              <MenuItem value="" disabled>
-                Select Department
+            <MenuItem value="" disabled>
+              Select Department
+            </MenuItem>
+            {departments.map((dept) => (
+              <MenuItem key={dept.departmentID} value={dept.departmentID}>
+                {dept.departmentName}
               </MenuItem>
-              {departments.map((dept) => (
-                <MenuItem key={dept.departmentID} value={dept.departmentID}>
-                  {dept.departmentName}
-                </MenuItem>
-              ))}
-            </Select>
+            ))}
+          </Select>
 
-            <Select
-              value={selectedUser}
-              onChange={handleUserChange}
-              displayEmpty
-              inputProps={{ 'aria-label': 'Select User' }}
-              style={{
-                height: '36px',
-                padding: '0 12px',
-                fontSize: '14px',
-                border: '1px solid #ccc',
-                borderRadius: '4px',
-                backgroundColor: 'white',
-                cursor: 'pointer',
-              }}
-              disabled={!users.length}
-            >
-              <MenuItem value="" disabled>
-                Select User
+          <Select
+            value={selectedUser}
+            onChange={handleUserChange}
+            displayEmpty
+            inputProps={{ 'aria-label': 'Select User' }}
+            style={{
+              height: '36px',
+              padding: '0 12px',
+              fontSize: '14px',
+              border: '1px solid #ccc',
+              borderRadius: '4px',
+              backgroundColor: 'white',
+              cursor: 'pointer',
+            }}
+            disabled={!users.length}
+          >
+            <MenuItem value="" disabled>
+              Select User
+            </MenuItem>
+            {users.map((u) => (
+              <MenuItem key={u.userName} value={u.userName}>
+                {u.firstName} {u.lastName}
               </MenuItem>
-              {users.map((u) => (
-                <MenuItem key={u.userName} value={u.userName}>
-                  {u.firstName} {u.lastName}
-                </MenuItem>
-              ))}
-            </Select>
+            ))}
+          </Select>
 
-            <button onClick={() => setShowInput(true)}>Add Department</button>
-            <button
-              onClick={() => {
-                if (!selectedDept) return;
-                const dept = departments.find(
-                  (d) => d.departmentID === parseInt(selectedDept)
-                );
-                if (dept) {
-                  setEditName(dept.departmentName);
-                  setEditing(true);
-                }
+          {(isAdmin || isManager) && (
+            <>
+              <button onClick={() => setShowInput(true)}>Add Department</button>
+              <button
+                onClick={() => {
+                  if (!selectedDept) return;
+                  const dept = departments.find(
+                    (d) => d.departmentID === parseInt(selectedDept)
+                  );
+                  if (dept) {
+                    setEditName(dept.departmentName);
+                    setEditing(true);
+                  }
+                }}
+                disabled={!selectedDept}
+              >
+                Edit Department
+              </button>
+              <button onClick={handleDeleteDepartment} disabled={!selectedDept}>
+                Delete Department
+              </button>
+              <button onClick={handleManageUserClick}>Manage Users</button>
+            </>
+          )}
+        </div>
+
+        {showInput && (
+          <div style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
+            <input
+              type="text"
+              value={newDepartmentName}
+              onChange={(e) => setNewDepartmentName(e.target.value)}
+              placeholder="New Department Name"
+              style={{
+                height: '30px',
+                fontSize: '14px',
+                padding: '4px 8px',
+                borderRadius: '4px',
+                border: '1px solid #ccc',
               }}
-              disabled={!selectedDept}
-            >
-              Edit Department
-            </button>
-            <button onClick={handleDeleteDepartment} disabled={!selectedDept}>
-              Delete Department
-            </button>
-            <button onClick={handleManageUserClick}>Manage Users</button>
+            />
+            <button onClick={handleAddDepartment}>Create</button>
+            <button onClick={() => setShowInput(false)}>Cancel</button>
           </div>
+        )}
 
-          {showInput && (
-            <div style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
-              <input
-                type="text"
-                value={newDepartmentName}
-                onChange={(e) => setNewDepartmentName(e.target.value)}
-                placeholder="New Department Name"
-                style={{
-                  height: '30px',
-                  fontSize: '14px',
-                  padding: '4px 8px',
-                  borderRadius: '4px',
-                  border: '1px solid #ccc',
-                }}
-              />
-              <button onClick={handleAddDepartment}>Create</button>
-              <button onClick={() => setShowInput(false)}>Cancel</button>
-            </div>
-          )}
-
-          {editing && (
-            <div style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
-              <input
-                type="text"
-                value={editName}
-                onChange={(e) => setEditName(e.target.value)}
-                placeholder="Edit Department Name"
-                style={{
-                  height: '30px',
-                  fontSize: '14px',
-                  padding: '4px 8px',
-                  borderRadius: '4px',
-                  border: '1px solid #ccc',
-                }}
-              />
-              <button onClick={handleUpdateDepartment}>Update</button>
-              <button onClick={() => setEditing(false)}>Cancel</button>
-            </div>
-          )}
-        </>
+        {editing && (
+          <div style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
+            <input
+              type="text"
+              value={editName}
+              onChange={(e) => setEditName(e.target.value)}
+              placeholder="Edit Department Name"
+              style={{
+                height: '30px',
+                fontSize: '14px',
+                padding: '4px 8px',
+                borderRadius: '4px',
+                border: '1px solid #ccc',
+              }}
+            />
+            <button onClick={handleUpdateDepartment}>Update</button>
+            <button onClick={() => setEditing(false)}>Cancel</button>
+          </div>
+        )}
+      </>
 
       {selectedDept && (
         <TrainingGrid
           departmentId={parseInt(selectedDept)}
           onSelectStep={(step) => setSelectedStep(step)}
           onStepsLoaded={(steps) => setAllStepIds(steps.map((s) => s.stepID))}
-          userRole={user.role} // Pass the user role to the TrainingGrid component
+          userRole={user.role}
         />
       )}
 
@@ -422,7 +428,7 @@ const DashboardPage: React.FC = () => {
                 await UpdateTrainingStep(selectedStep.stepID, {
                   ...selectedStep,
                   ...editFields,
-                  lastModifiedBy: user.uid, // Make sure this is the correct field name
+                  lastModifiedBy: user.uid,
                 });
                 alert('Training step updated!');
                 setEditModalOpen(false);
