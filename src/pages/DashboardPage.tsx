@@ -29,6 +29,8 @@ const DashboardPage: React.FC = () => {
   const navigate = useNavigate();
   const isAdmin = hasRole(user, 'Admin');
   const isManager = hasRole(user, 'Manager');
+  const isTrainer = hasRole(user, 'Trainer');
+  const isTrainee = hasRole(user, 'Trainee');
 
   const [departments, setDepartments] = useState<Department[]>([]);
   const [selectedDept, setSelectedDept] = useState('');
@@ -142,8 +144,6 @@ const DashboardPage: React.FC = () => {
       <button onClick={logout} style={{ marginBottom: '20px' }}>
         Logout
       </button>
-
-      {(isAdmin || isManager) && (
         <>
           <div
             style={{
@@ -266,7 +266,6 @@ const DashboardPage: React.FC = () => {
             </div>
           )}
         </>
-      )}
 
       {selectedDept && (
         <TrainingGrid

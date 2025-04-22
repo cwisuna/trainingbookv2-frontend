@@ -11,6 +11,9 @@ export interface TrainingStep {
   isCompleted: boolean;
   isSignedOff: boolean;
   lastModifiedBy: number;
+
+  trainerNotes? : string; // not sure if this is being passed
+  columnNotes? :string; // not sure if this is being passed
 }
 
 //url for the training step endpoints
