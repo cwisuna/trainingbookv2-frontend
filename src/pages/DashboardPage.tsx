@@ -142,7 +142,15 @@ const DashboardPage: React.FC = () => {
 
   return (
     <div style={{ padding: '20px' }}>
-      <h2>Welcome, {user.name}</h2>
+      <h2>
+        {isAdmin || isManager
+          ? `TCA Digital Training Book - Set-Up Module`
+          : isTrainer
+          ? `TCA Digital Training Book - Trainer Module`
+          : isTrainee
+          ? `TCA Digital Training Book - Trainee Module`
+          : `Welcome, ${user.name}`}
+      </h2>
       <button onClick={logout} style={{ marginBottom: '20px' }}>
         Logout
       </button>
