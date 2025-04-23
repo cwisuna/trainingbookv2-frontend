@@ -13,6 +13,11 @@ interface Department {
   departmentName: string;
 }
 
+interface Roles {
+  roleID: number;
+  roleName: string;
+}
+
 const AddUsersPage: React.FC = () => {
   const navigate = useNavigate();
 
@@ -28,6 +33,9 @@ const AddUsersPage: React.FC = () => {
     null
   );
 
+  const [roles, setRoles] = useState<Roles[]>([]);
+  const [selectedRole, setSelectedRole] = useState<number | null>(null);
+
   useEffect(() => {
     const fetchDepartments = async () => {
       try {
@@ -42,6 +50,20 @@ const AddUsersPage: React.FC = () => {
     fetchDepartments();
   }, []);
 
+  useEffect(() => {
+    const fetchRoles = async () => {
+      try {
+        const res = await fetch('https://localhost:44342/api/Roles');
+        const data = await res.json();
+        setRoles(data);
+      } catch (err) {
+        console.error('Failed to load roles', err);
+      }
+    };
+
+    fetchRoles();
+  }, []);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -50,9 +72,15 @@ const AddUsersPage: React.FC = () => {
       return;
     }
 
+    if (!selectedRole) {
+      alert('Please select a role.');
+      return;
+    }
+    
     const payload = {
       ...form,
       departmentID: selectedDepartment,
+      roleID: selectedRole,
     };
 
     try {
@@ -129,6 +157,18 @@ const AddUsersPage: React.FC = () => {
           {departments.map((dept) => (
             <option key={dept.departmentID} value={dept.departmentID}>
               {dept.departmentName}
+            </option>
+          ))}
+        </select>
+        <select
+          value={selectedRole ?? ''}
+          onChange={(e) => setSelectedRole(Number(e.target.value))}
+          style={inputStyle}
+        >
+          <option value="">Select Role</option>
+          {roles.map((role) => (
+            <option key={role.roleID} value={role.roleID}>
+              {role.roleName}
             </option>
           ))}
         </select>
