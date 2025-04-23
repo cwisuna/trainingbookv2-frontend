@@ -290,33 +290,39 @@ const DashboardPage: React.FC = () => {
         />
       )}
 
-      {(isAdmin || isManager) && (
-        <div style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
-          <button
-            onClick={() => {
-              if (!selectedDept) {
-                alert('Select a department first');
-                return;
-              }
-              navigate(`/add-training-step?departmentID=${selectedDept}`);
-            }}
-          >
-            Add Training Step
-          </button>
-          <button
-            onClick={() => {
-              if (!selectedStep) {
-                alert('Select a training step first');
-                return;
-              }
-              setEditFields(selectedStep);
-              setEditModalOpen(true);
-            }}
-            disabled={!selectedStep}
-          >
-            Edit Training Step
-          </button>
-          <button>Delete Training Step</button>
+      <div style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
+        {(isAdmin || isManager) && (
+          <>
+            <button
+              onClick={() => {
+                if (!selectedDept) {
+                  alert('Select a department first');
+                  return;
+                }
+                navigate(`/add-training-step?departmentID=${selectedDept}`);
+              }}
+            >
+              Add Training Step
+            </button>
+            <button
+              onClick={() => {
+                if (!selectedStep) {
+                  alert('Select a training step first');
+                  return;
+                }
+                setEditFields(selectedStep);
+                setEditModalOpen(true);
+              }}
+              disabled={!selectedStep}
+            >
+              Edit Training Step
+            </button>
+            <button>Delete Training Step</button>
+          </>
+        )}
+
+        {/* Show Create Training Book button for Trainers */}
+        {!(isAdmin || isManager || isTrainee) && (
           <button
             onClick={async () => {
               if (!selectedUser || !selectedDept) {
@@ -350,8 +356,8 @@ const DashboardPage: React.FC = () => {
           >
             Create Training Book
           </button>
-        </div>
-      )}
+        )}
+      </div>
 
       <Dialog open={editModalOpen} onClose={() => setEditModalOpen(false)}>
         <DialogTitle>Edit Training Step</DialogTitle>
