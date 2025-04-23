@@ -8,13 +8,16 @@ import { useAuth } from '../context/AuthContext';
 
 interface TrainingGridProps {
   departmentId: number;
+  trainingStepsOverride?: TrainingStep[]; 
   onSelectStep?: (step: TrainingStep) => void;
   onStepsLoaded?: (steps: TrainingStep[]) => void;
   userRole?: string[];
 }
 
+
 const TrainingGrid: React.FC<TrainingGridProps> = ({
   departmentId,
+  trainingStepsOverride, 
   onSelectStep,
   onStepsLoaded,
 }) => {
@@ -69,7 +72,7 @@ const TrainingGrid: React.FC<TrainingGridProps> = ({
       field: 'dateAdded',
       headerName: 'Date Added',
       width: 150,
-      valueGetter: () => new Date().toLocaleDateString(), // Consider replacing with real data
+      valueGetter: () => new Date().toLocaleDateString(), 
     },
   ];
 
@@ -99,24 +102,27 @@ const TrainingGrid: React.FC<TrainingGridProps> = ({
   }
   
   useEffect(() => {
-    setRows([]);
-
+    if (trainingStepsOverride) {
+      setRows(trainingStepsOverride);
+      if (onStepsLoaded) onStepsLoaded(trainingStepsOverride);
+      return;
+    }
+  
     if (!departmentId) return;
-
+  
     const loadSteps = async () => {
       try {
         const formattedRows = await GetFormattedStepsByDepartment(departmentId);
         setRows(formattedRows);
-        if (onStepsLoaded) {
-          onStepsLoaded(formattedRows);
-        }
+        if (onStepsLoaded) onStepsLoaded(formattedRows);
       } catch (err) {
         console.error('Error loading training steps:', err);
       }
     };
-
+  
     loadSteps();
-  }, [departmentId]);
+  }, [departmentId, trainingStepsOverride]);
+  
 
   return (
     <div style={{ height: 600, width: '100%' }}>

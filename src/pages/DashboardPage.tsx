@@ -23,6 +23,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import TextField from '@mui/material/TextField';
 import { CreateTrainingBookWithSteps } from '../services/trainingStepService';
+import { GetTrainingBookForTrainee } from '../services/trainingStepService';
 
 const DashboardPage: React.FC = () => {
   const { user, logout } = useAuth();
@@ -45,6 +46,8 @@ const DashboardPage: React.FC = () => {
   const [editFields, setEditFields] = useState<Partial<TrainingStep>>({});
   const [allStepIds, setAllStepIds] = useState<number[]>([]);
 
+  const [traineeSteps, setTraineeSteps] = useState<TrainingStep[]>([]);
+
   useEffect(() => {
     loadDepartments();
   }, []);
@@ -65,6 +68,21 @@ const DashboardPage: React.FC = () => {
       getUsers();
     }
   }, [selectedDept]);
+
+  useEffect(() => {
+    const loadTraineeSteps = async () => {
+      if (isTrainee) {
+        try {
+          const data = await GetTrainingBookForTrainee();
+          setTraineeSteps(data.trainingSteps || []);
+        } catch (err) {
+          console.error('Error loading trainee book:', err);
+        }
+      }
+    };
+
+    loadTraineeSteps();
+  }, [isTrainee]);
 
   const loadDepartments = async () => {
     try {
@@ -281,14 +299,23 @@ const DashboardPage: React.FC = () => {
         )}
       </>
 
-      {selectedDept && (
+      {isTrainee ? (
         <TrainingGrid
-          departmentId={parseInt(selectedDept)}
-          onSelectStep={(step) => setSelectedStep(step)}
-          onStepsLoaded={(steps) => setAllStepIds(steps.map((s) => s.stepID))}
+          departmentId={0}
+          trainingStepsOverride={traineeSteps}
           userRole={user.role}
         />
+      ) : (
+        selectedDept && (
+          <TrainingGrid
+            departmentId={parseInt(selectedDept)}
+            onSelectStep={(step) => setSelectedStep(step)}
+            onStepsLoaded={(steps) => setAllStepIds(steps.map((s) => s.stepID))}
+            userRole={user.role}
+          />
+        )
       )}
+
       {/* Buttons Under Training Grid for Admin/Managers/Trainers */}
       <div style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
         {(isAdmin || isManager) && (

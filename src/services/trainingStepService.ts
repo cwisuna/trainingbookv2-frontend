@@ -12,8 +12,8 @@ export interface TrainingStep {
   isSignedOff: boolean;
   lastModifiedBy: number;
 
-  trainerNotes? : string; // not sure if this is being passed
-  columnNotes? :string; // not sure if this is being passed
+  trainerNotes?: string; // not sure if this is being passed
+  columnNotes?: string; // not sure if this is being passed
 }
 
 //url for the training step endpoints
@@ -144,3 +144,18 @@ export async function CreateTrainingBookWithSteps(
 
   return await response.json();
 }
+
+export const GetTrainingBookForTrainee = async () => {
+  const response = await fetch(
+    'https://localhost:44342/api/UserTrainingBooks/my-training-book',
+    {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('token')}`,
+      },
+    }
+  );
+
+  if (!response.ok) throw new Error('Failed to fetch trainee training book');
+  return response.json();
+};
