@@ -213,7 +213,7 @@ const DashboardPage: React.FC = () => {
               </MenuItem>
             ))}
           </Select>
-
+          {/* Buttons Above Training Grid for Admin/Managers only*/}
           {(isAdmin || isManager) && (
             <>
               <button onClick={() => setShowInput(true)}>Add Department</button>
@@ -289,7 +289,7 @@ const DashboardPage: React.FC = () => {
           userRole={user.role}
         />
       )}
-
+      {/* Buttons Under Training Grid for Admin/Managers/Trainers */}
       <div style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
         {(isAdmin || isManager) && (
           <>
