@@ -350,39 +350,49 @@ const DashboardPage: React.FC = () => {
 
         {/* Show Create Training Book button for Trainers */}
         {!(isAdmin || isManager || isTrainee) && (
-          <button
-            onClick={async () => {
-              if (!selectedUser || !selectedDept) {
-                alert('Please select both a user and department.');
-                return;
-              }
+          <div style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
+            <button
+              onClick={async () => {
+                if (!selectedUser || !selectedDept) {
+                  alert('Please select both a user and department.');
+                  return;
+                }
 
-              if (!allStepIds.length) {
-                alert('No training steps found for this department.');
-                return;
-              }
+                if (!allStepIds.length) {
+                  alert('No training steps found for this department.');
+                  return;
+                }
 
-              const userObj = users.find((u) => u.userName === selectedUser);
-              if (!userObj) {
-                alert('Selected user not found.');
-                return;
-              }
+                const userObj = users.find((u) => u.userName === selectedUser);
+                if (!userObj) {
+                  alert('Selected user not found.');
+                  return;
+                }
 
-              try {
-                await CreateTrainingBookWithSteps(
-                  userObj.userID,
-                  parseInt(selectedDept),
-                  allStepIds
-                );
-                alert('Training book created successfully!');
-              } catch (err) {
-                console.error('Error creating training book:', err);
-                alert('Failed to create training book.');
-              }
-            }}
-          >
-            Create Training Book
-          </button>
+                try {
+                  await CreateTrainingBookWithSteps(
+                    userObj.userID,
+                    parseInt(selectedDept),
+                    allStepIds
+                  );
+                  alert('Training book created successfully!');
+                } catch (err) {
+                  console.error('Error creating training book:', err);
+                  alert('Failed to create training book.');
+                }
+              }}
+            >
+              Create Training Book
+            </button>
+
+            <button
+              onClick={() => {
+                alert('Add Trainer Note clicked');
+              }}
+            >
+              Add Trainer Note
+            </button>
+          </div>
         )}
       </div>
 
