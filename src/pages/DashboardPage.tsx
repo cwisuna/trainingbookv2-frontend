@@ -348,7 +348,7 @@ const DashboardPage: React.FC = () => {
           </>
         )}
 
-        {/* Show Create Training Book button for Trainers */}
+        {/* Show buttons for Trainers */}
         {!(isAdmin || isManager || isTrainee) && (
           <div style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
             <button
@@ -395,6 +395,19 @@ const DashboardPage: React.FC = () => {
           </div>
         )}
       </div>
+
+      {/* Show button for Trainees */}
+      {isTrainee && (
+        <div style={{ marginTop: '20px' }}>
+          <button
+            onClick={() => {
+              alert('Add Trainee Note clicked');
+            }}
+          >
+            Add Trainee Note
+          </button>
+        </div>
+      )}
 
       <Dialog open={editModalOpen} onClose={() => setEditModalOpen(false)}>
         <DialogTitle>Edit Training Step</DialogTitle>
