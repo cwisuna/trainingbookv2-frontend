@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-
+import taihoLogo from '../assets/TAIHO-LOGO.png';
 interface LoginFormProps {
   onLogin: (username: string, password: string) => void;
   error: string;
@@ -16,6 +16,11 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onLogin, error }) => {
 
   return (
     <form onSubmit={handleSubmit} style={formStyle}>
+      <img
+        src={taihoLogo}
+        alt="Logo"
+        style={imageStyle}
+      />
       <h2 style={titleStyle}>Login</h2>
 
       {error && <div style={errorStyle}>{error}</div>}
@@ -47,6 +52,13 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onLogin, error }) => {
       </button>
     </form>
   );
+};
+
+const imageStyle: React.CSSProperties = {
+  width: '100px', 
+  height: 'auto',
+  margin: '0 auto 20px auto',
+  display: 'block',
 };
 
 const formStyle: React.CSSProperties = {
