@@ -3,32 +3,40 @@ import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import {
   GetFormattedStepsByDepartment,
   TrainingStep,
+  DeleteTrainingStep,
 } from '../services/trainingStepService';
 import { useAuth } from '../context/AuthContext';
+import { IconButton } from '@mui/material';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 interface TrainingGridProps {
   departmentId: number;
-  trainingStepsOverride?: TrainingStep[]; 
+  trainingStepsOverride?: TrainingStep[];
   onSelectStep?: (step: TrainingStep) => void;
   onStepsLoaded?: (steps: TrainingStep[]) => void;
   userRole?: string[];
 }
 
-
 const TrainingGrid: React.FC<TrainingGridProps> = ({
   departmentId,
-  trainingStepsOverride, 
+  trainingStepsOverride,
   onSelectStep,
   onStepsLoaded,
 }) => {
-
-  const { user } = useAuth(); 
+  const { user } = useAuth();
   const isTrainerOrTrainee =
     user && !user.role.includes('Admin') && !user.role.includes('Manager');
-    
+
   const [rows, setRows] = useState<TrainingStep[]>([]);
 
-  
+  const handleDeleteStep = async (id: number) => {
+    try {
+      await DeleteTrainingStep(id);
+      setRows((prevRows) => prevRows.filter((step) => step.step !== id));
+    } catch (error) {
+      console.error('Failed to delete step:', error);
+    }
+  };
 
   const columns: GridColDef[] = [
     { field: 'step', headerName: 'Step', width: 70 },
@@ -72,7 +80,7 @@ const TrainingGrid: React.FC<TrainingGridProps> = ({
       field: 'dateAdded',
       headerName: 'Date Added',
       width: 150,
-      valueGetter: () => new Date().toLocaleDateString(), 
+      valueGetter: () => new Date().toLocaleDateString(),
     },
   ];
 
@@ -100,16 +108,27 @@ const TrainingGrid: React.FC<TrainingGridProps> = ({
       }
     );
   }
-  
+
+  columns.push({
+    field: 'actions',
+    headerName: 'Actions',
+    width: 100,
+    renderCell: (params) => (
+      <IconButton color="error" onClick={() => handleDeleteStep(params.row.step)}>
+        <DeleteIcon />
+      </IconButton>
+    ),
+  });
+
   useEffect(() => {
     if (trainingStepsOverride) {
       setRows(trainingStepsOverride);
       if (onStepsLoaded) onStepsLoaded(trainingStepsOverride);
       return;
     }
-  
+
     if (!departmentId) return;
-  
+
     const loadSteps = async () => {
       try {
         const formattedRows = await GetFormattedStepsByDepartment(departmentId);
@@ -119,10 +138,9 @@ const TrainingGrid: React.FC<TrainingGridProps> = ({
         console.error('Error loading training steps:', err);
       }
     };
-  
+
     loadSteps();
   }, [departmentId, trainingStepsOverride]);
-  
 
   return (
     <div style={{ height: 600, width: '100%' }}>
