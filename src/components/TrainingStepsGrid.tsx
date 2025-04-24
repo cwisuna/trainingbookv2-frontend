@@ -29,10 +29,10 @@ const TrainingGrid: React.FC<TrainingGridProps> = ({
 
   const [rows, setRows] = useState<TrainingStep[]>([]);
 
-  const handleDeleteStep = async (id: number) => {
+  const handleDeleteStep = async (stepID: number) => {
     try {
-      await DeleteTrainingStep(id);
-      setRows((prevRows) => prevRows.filter((step) => step.step !== id));
+      await DeleteTrainingStep(stepID);
+      setRows((prevRows) => prevRows.filter((step) => step.stepID !== stepID));
     } catch (error) {
       console.error('Failed to delete step:', error);
     }
@@ -114,7 +114,7 @@ const TrainingGrid: React.FC<TrainingGridProps> = ({
     headerName: 'Actions',
     width: 100,
     renderCell: (params) => (
-      <IconButton color="error" onClick={() => handleDeleteStep(params.row.step)}>
+      <IconButton color="error" onClick={() => handleDeleteStep(params.row.stepID)}>
         <DeleteIcon />
       </IconButton>
     ),
