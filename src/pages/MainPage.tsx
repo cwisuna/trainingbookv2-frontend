@@ -344,7 +344,6 @@ const MainPage: React.FC = () => {
             >
               Edit Training Step
             </button>
-            <button>Delete Training Step</button>
           </>
         )}
 
