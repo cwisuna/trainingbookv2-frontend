@@ -409,7 +409,10 @@ const MainPage: React.FC = () => {
         </div>
       )}
 
-      <Dialog open={editModalOpen} onClose={() => setEditModalOpen(false)}>
+      <Dialog open={editModalOpen} onClose={() => setEditModalOpen(false)}
+        fullWidth
+        maxWidth="md"
+        sx={{ '& .MuiDialog-paper': { width: '700px' } }}>
         <DialogTitle>Edit Training Step</DialogTitle>
         <DialogContent
           style={{
@@ -476,7 +479,7 @@ const MainPage: React.FC = () => {
             }
           />
           <TextField
-            label="File Path"
+            label="Reference "
             value={editFields.filePath ?? ''}
             onChange={(e) =>
               setEditFields({ ...editFields, filePath: e.target.value })
