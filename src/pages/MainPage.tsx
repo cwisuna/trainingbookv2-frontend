@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import TrainingGrid from '../components/TrainingGrid';
+import TrainingGrid from '../components/TrainingStepsGrid';
 import { hasRole } from '../utils/auth';
 import {
   GetDepartments,
@@ -25,7 +25,7 @@ import TextField from '@mui/material/TextField';
 import { CreateTrainingBookWithSteps } from '../services/trainingStepService';
 import { GetTrainingBookForTrainee } from '../services/trainingStepService';
 
-const DashboardPage: React.FC = () => {
+const MainPage: React.FC = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const isAdmin = hasRole(user, 'Admin');
@@ -510,4 +510,4 @@ const DashboardPage: React.FC = () => {
   );
 };
 
-export default DashboardPage;
+export default MainPage;
