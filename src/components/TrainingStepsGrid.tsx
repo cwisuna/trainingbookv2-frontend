@@ -26,6 +26,7 @@ const TrainingGrid: React.FC<TrainingGridProps> = ({
   const { user } = useAuth();
   const isTrainerOrTrainee =
     user && !user.role.includes('Admin') && !user.role.includes('Manager');
+  const isManager = user && user.role.includes('Manager');
 
   const [rows, setRows] = useState<TrainingStep[]>([]);
 
@@ -109,16 +110,18 @@ const TrainingGrid: React.FC<TrainingGridProps> = ({
     );
   }
 
-  columns.push({
-    field: 'actions',
-    headerName: 'Actions',
-    width: 100,
-    renderCell: (params) => (
-      <IconButton color="error" onClick={() => handleDeleteStep(params.row.stepID)}>
-        <DeleteIcon />
-      </IconButton>
-    ),
-  });
+  if (isManager) {
+    columns.push({
+      field: 'actions',
+      headerName: 'Actions',
+      width: 100,
+      renderCell: (params) => (
+        <IconButton color="error" onClick={() => handleDeleteStep(params.row.stepID)}>
+          <DeleteIcon />
+        </IconButton>
+      ),
+    });
+  }
 
   useEffect(() => {
     if (trainingStepsOverride) {
