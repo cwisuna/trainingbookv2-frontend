@@ -24,6 +24,7 @@ import DialogActions from '@mui/material/DialogActions';
 import TextField from '@mui/material/TextField';
 import { createTrainingBookWithSteps } from '../services/trainingStepService';
 import { getTrainingBookForTrainee } from '../services/trainingStepService';
+import { getUsersDepartmentByUserId } from '../services/departmentService';
 
 const MainPage: React.FC = () => {
   const { user, logout } = useAuth();
@@ -86,12 +87,19 @@ const MainPage: React.FC = () => {
 
   const loadDepartments = async () => {
     try {
-      const data = await getAllDepartments();
-      setDepartments(data);
+      if (isTrainee && user?.uid) {
+        const dept = await getUsersDepartmentByUserId(user.uid);
+        setDepartments([dept]);
+        setSelectedDept(String(dept.departmentID));
+      } else {
+        const data = await getAllDepartments();
+        setDepartments(data);
+      }
     } catch (error) {
       console.error('Error loading departments:', error);
     }
   };
+  
 
   const handleSelectChange = (event: SelectChangeEvent) => {
     setSelectedDept(event.target.value);
@@ -186,6 +194,7 @@ const MainPage: React.FC = () => {
             onChange={handleSelectChange}
             displayEmpty
             inputProps={{ 'aria-label': 'Select Department' }}
+            disabled={isTrainee}
             style={{
               height: '36px',
               padding: '0 12px',
