@@ -42,7 +42,7 @@ export const UpdateDepartment = async (
 };
 
 export async function getUserDepartmentByUserId(userId: number) {
-  const response = await fetch(`https://localhost:44342/api/Departments/by-userId${userId}`, {
+  const response = await fetch(`https://localhost:44342/api/Departments/by-userId/${userId}`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
