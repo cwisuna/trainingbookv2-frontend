@@ -41,6 +41,23 @@ export const UpdateDepartment = async (
   if (!response.ok) throw new Error('Failed to update department');
 };
 
+export async function getUserDepartmentByUserId(userId: number) {
+  const response = await fetch(`https://localhost:44342/api/Departments/by-userId${userId}`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`Error fetching department: ${response.statusText}`);
+  }
+
+  const data = await response.json();
+  return data as { departmentID: number; departmentName: string };
+}
+
+
 export const DeleteDepartment = async (departmentID: number): Promise<void> => {
   const response = await fetch(`${baseUrl}/${departmentID}`, {
     method: 'DELETE',
