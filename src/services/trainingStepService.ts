@@ -20,7 +20,7 @@ export interface TrainingStep {
 const API_BASE = 'https://localhost:44342/api/TrainingSteps';
 
 //gets training steps by department and formats them for the MUI grid
-export const GetFormattedStepsByDepartment = async (
+export const getFormattedTrainingStepsByDepartment = async (
   departmentId: number
 ): Promise<any[]> => {
   const res = await fetch(`${API_BASE}/by-department/${departmentId}`);
@@ -35,7 +35,7 @@ export const GetFormattedStepsByDepartment = async (
 };
 
 //get all training steps in DB
-export const GetAllTrainingSteps = async (): Promise<TrainingStep[]> => {
+export const getAllTrainingSteps = async (): Promise<TrainingStep[]> => {
   const res = await fetch(API_BASE);
   if (!res.ok) {
     throw new Error(`Failed to fetch training steps: ${res.status}`);
@@ -44,7 +44,7 @@ export const GetAllTrainingSteps = async (): Promise<TrainingStep[]> => {
 };
 
 //get training steps by department
-export const GetTrainingStepsByDepartment = async (
+export const getTrainingStepsByDepartment = async (
   departmentId: number
 ): Promise<TrainingStep[]> => {
   const res = await fetch(`${API_BASE}/by-department/${departmentId}`);
@@ -54,18 +54,8 @@ export const GetTrainingStepsByDepartment = async (
   return await res.json();
 };
 
-// deletes selected training step by id
-export const DeleteTrainingStep = async (stepId: number): Promise<void> => {
-  const res = await fetch(`${API_BASE}/${stepId}`, {
-    method: 'DELETE',
-  });
-  if (!res.ok) {
-    throw new Error(`Failed to delete training step: ${res.status}`);
-  }
-};
-
 //gets a single training step by id
-export const GetTrainingStepById = async (
+export const getTrainingStepById = async (
   id: number,
   token?: string
 ): Promise<TrainingStep> => {
@@ -84,7 +74,7 @@ export const GetTrainingStepById = async (
 };
 
 //updates a training step that was selected by its id
-export const UpdateTrainingStep = async (
+export const updateTrainingStep = async (
   id: number,
   updatedStep: TrainingStep,
   token?: string
@@ -106,7 +96,7 @@ export const UpdateTrainingStep = async (
   }
 };
 
-//deletes a training step by id. may be redundant with DeleteTrainingStep function??
+// deletes selected training step by id
 export const deleteTrainingStep = async (stepId: number): Promise<void> => {
   const res = await fetch(`${API_BASE}/${stepId}`, {
     method: 'DELETE',
@@ -117,7 +107,7 @@ export const deleteTrainingStep = async (stepId: number): Promise<void> => {
 };
 
 //creates a training book with a list of training steps for a specific user and department
-export async function CreateTrainingBookWithSteps(
+export async function createTrainingBookWithSteps(
   userId: number,
   departmentId: number,
   stepIds: number[]
@@ -145,7 +135,7 @@ export async function CreateTrainingBookWithSteps(
   return await response.json();
 }
 
-export const GetTrainingBookForTrainee = async () => {
+export const getTrainingBookForTrainee = async () => {
   const response = await fetch(
     'https://localhost:44342/api/UserTrainingBooks/my-training-book',
     {

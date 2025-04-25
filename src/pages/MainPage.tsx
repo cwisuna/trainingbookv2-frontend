@@ -3,15 +3,15 @@ import { useAuth } from '../context/AuthContext';
 import TrainingGrid from '../components/TrainingStepsGrid';
 import { hasRole } from '../utils/auth';
 import {
-  GetDepartments,
-  AddDepartment,
-  UpdateDepartment,
-  DeleteDepartment,
+  getAllDepartments,
+  addDepartment,
+  updateDepartment,
+  deleteDepartment,
   Department,
 } from '../services/departmentService';
-import { GetUsersByDepartment, User } from '../services/userService';
+import { getAllUsersInDepartment, User } from '../services/userService';
 import {
-  UpdateTrainingStep,
+  updateTrainingStep,
   TrainingStep,
 } from '../services/trainingStepService';
 import MenuItem from '@mui/material/MenuItem';
@@ -22,8 +22,8 @@ import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import TextField from '@mui/material/TextField';
-import { CreateTrainingBookWithSteps } from '../services/trainingStepService';
-import { GetTrainingBookForTrainee } from '../services/trainingStepService';
+import { createTrainingBookWithSteps } from '../services/trainingStepService';
+import { getTrainingBookForTrainee } from '../services/trainingStepService';
 
 const MainPage: React.FC = () => {
   const { user, logout } = useAuth();
@@ -56,7 +56,7 @@ const MainPage: React.FC = () => {
     if (selectedDept) {
       const getUsers = async () => {
         try {
-          const fetchedUsers = await GetUsersByDepartment(
+          const fetchedUsers = await getAllUsersInDepartment(
             parseInt(selectedDept)
           );
           setUsers(fetchedUsers);
@@ -73,7 +73,7 @@ const MainPage: React.FC = () => {
     const loadTraineeSteps = async () => {
       if (isTrainee) {
         try {
-          const data = await GetTrainingBookForTrainee();
+          const data = await getTrainingBookForTrainee();
           setTraineeSteps(data.trainingSteps || []);
         } catch (err) {
           console.error('Error loading trainee book:', err);
@@ -86,7 +86,7 @@ const MainPage: React.FC = () => {
 
   const loadDepartments = async () => {
     try {
-      const data = await GetDepartments();
+      const data = await getAllDepartments();
       setDepartments(data);
     } catch (error) {
       console.error('Error loading departments:', error);
@@ -105,7 +105,7 @@ const MainPage: React.FC = () => {
   const handleAddDepartment = async () => {
     if (!newDepartmentName.trim()) return;
     try {
-      const newDept = await AddDepartment(newDepartmentName);
+      const newDept = await addDepartment(newDepartmentName);
       setDepartments((prev) => [...prev, newDept]);
       setSelectedDept(String(newDept.departmentID));
       setNewDepartmentName('');
@@ -123,7 +123,7 @@ const MainPage: React.FC = () => {
     if (!confirmDelete) return;
 
     try {
-      await DeleteDepartment(parseInt(selectedDept));
+      await deleteDepartment(parseInt(selectedDept));
       setDepartments((prev) =>
         prev.filter((d) => d.departmentID !== parseInt(selectedDept))
       );
@@ -137,7 +137,7 @@ const MainPage: React.FC = () => {
   const handleUpdateDepartment = async () => {
     if (!selectedDept || !editName.trim()) return;
     try {
-      await UpdateDepartment(parseInt(selectedDept), editName);
+      await updateDepartment(parseInt(selectedDept), editName);
       setDepartments((prev) =>
         prev.map((d) =>
           d.departmentID === parseInt(selectedDept)
@@ -369,7 +369,7 @@ const MainPage: React.FC = () => {
                 }
 
                 try {
-                  await CreateTrainingBookWithSteps(
+                  await createTrainingBookWithSteps(
                     userObj.userID,
                     parseInt(selectedDept),
                     allStepIds
@@ -408,10 +408,13 @@ const MainPage: React.FC = () => {
         </div>
       )}
 
-      <Dialog open={editModalOpen} onClose={() => setEditModalOpen(false)}
+      <Dialog
+        open={editModalOpen}
+        onClose={() => setEditModalOpen(false)}
         fullWidth
         maxWidth="md"
-        sx={{ '& .MuiDialog-paper': { width: '700px' } }}>
+        sx={{ '& .MuiDialog-paper': { width: '700px' } }}
+      >
         <DialogTitle>Edit Training Step</DialogTitle>
         <DialogContent
           style={{
@@ -491,7 +494,7 @@ const MainPage: React.FC = () => {
             onClick={async () => {
               if (!selectedStep) return;
               try {
-                await UpdateTrainingStep(selectedStep.stepID, {
+                await updateTrainingStep(selectedStep.stepID, {
                   ...selectedStep,
                   ...editFields,
                   lastModifiedBy: user.uid,

@@ -7,7 +7,7 @@ export interface User {
   departmentName: string;
 }
 
-export const GetUsersByDepartment = async (
+export const getAllUsersInDepartment = async (
   departmentId: number
 ): Promise<User[]> => {
   const response = await fetch(

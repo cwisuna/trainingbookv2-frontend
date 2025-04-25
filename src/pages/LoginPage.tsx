@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { LoginUser } from '../services/authService';
+import { loginUser } from '../services/authService';
 import { LoginForm } from '../components/LoginForm';
 
 const LoginPage: React.FC = () => {
@@ -11,7 +11,7 @@ const LoginPage: React.FC = () => {
 
   const handleLogin = async (username: string, password: string) => {
     try {
-      const data = await LoginUser(username, password);
+      const data = await loginUser(username, password);
       login(data.token);
       navigate('/dashboard');
     } catch (err: any) {

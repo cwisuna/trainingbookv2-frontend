@@ -5,13 +5,13 @@ export interface Department {
 
 const baseUrl = 'https://localhost:44342/api/departments';
 
-export const GetDepartments = async (): Promise<Department[]> => {
+export const getAllDepartments = async (): Promise<Department[]> => {
   const response = await fetch(baseUrl);
   if (!response.ok) throw new Error('Failed to fetch departments');
   return response.json();
 };
 
-export const AddDepartment = async (
+export const addDepartment = async (
   departmentName: string
 ): Promise<Department> => {
   const response = await fetch(baseUrl, {
@@ -26,7 +26,7 @@ export const AddDepartment = async (
   return response.json();
 };
 
-export const UpdateDepartment = async (
+export const updateDepartment = async (
   departmentID: number,
   departmentName: string
 ): Promise<void> => {
@@ -41,13 +41,16 @@ export const UpdateDepartment = async (
   if (!response.ok) throw new Error('Failed to update department');
 };
 
-export async function getUserDepartmentByUserId(userId: number) {
-  const response = await fetch(`https://localhost:44342/api/Departments/by-userId/${userId}`, {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  });
+export async function getUsersDepartmentByUserId(userId: number) {
+  const response = await fetch(
+    `https://localhost:44342/api/Departments/by-userId/${userId}`,
+    {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    }
+  );
 
   if (!response.ok) {
     throw new Error(`Error fetching department: ${response.statusText}`);
@@ -57,8 +60,7 @@ export async function getUserDepartmentByUserId(userId: number) {
   return data as { departmentID: number; departmentName: string };
 }
 
-
-export const DeleteDepartment = async (departmentID: number): Promise<void> => {
+export const deleteDepartment = async (departmentID: number): Promise<void> => {
   const response = await fetch(`${baseUrl}/${departmentID}`, {
     method: 'DELETE',
   });

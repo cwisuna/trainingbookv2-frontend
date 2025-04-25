@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import {
-  GetFormattedStepsByDepartment,
+  getFormattedTrainingStepsByDepartment,
   TrainingStep,
-  DeleteTrainingStep,
+  deleteTrainingStep,
 } from '../services/trainingStepService';
 import { useAuth } from '../context/AuthContext';
 import { IconButton } from '@mui/material';
@@ -32,7 +32,7 @@ const TrainingGrid: React.FC<TrainingGridProps> = ({
 
   const handleDeleteStep = async (stepID: number) => {
     try {
-      await DeleteTrainingStep(stepID);
+      await deleteTrainingStep(stepID);
       setRows((prevRows) => prevRows.filter((step) => step.stepID !== stepID));
     } catch (error) {
       console.error('Failed to delete step:', error);
@@ -116,7 +116,10 @@ const TrainingGrid: React.FC<TrainingGridProps> = ({
       headerName: 'Actions',
       width: 100,
       renderCell: (params) => (
-        <IconButton color="error" onClick={() => handleDeleteStep(params.row.stepID)}>
+        <IconButton
+          color="error"
+          onClick={() => handleDeleteStep(params.row.stepID)}
+        >
           <DeleteIcon />
         </IconButton>
       ),
@@ -134,7 +137,9 @@ const TrainingGrid: React.FC<TrainingGridProps> = ({
 
     const loadSteps = async () => {
       try {
-        const formattedRows = await GetFormattedStepsByDepartment(departmentId);
+        const formattedRows = await getFormattedTrainingStepsByDepartment(
+          departmentId
+        );
         setRows(formattedRows);
         if (onStepsLoaded) onStepsLoaded(formattedRows);
       } catch (err) {
