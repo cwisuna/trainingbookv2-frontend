@@ -99,7 +99,6 @@ const MainPage: React.FC = () => {
       console.error('Error loading departments:', error);
     }
   };
-  
 
   const handleSelectChange = (event: SelectChangeEvent) => {
     setSelectedDept(event.target.value);
@@ -215,31 +214,34 @@ const MainPage: React.FC = () => {
             ))}
           </Select>
 
-          <Select
-            value={selectedUser}
-            onChange={handleUserChange}
-            displayEmpty
-            inputProps={{ 'aria-label': 'Select User' }}
-            style={{
-              height: '36px',
-              padding: '0 12px',
-              fontSize: '14px',
-              border: '1px solid #ccc',
-              borderRadius: '4px',
-              backgroundColor: 'white',
-              cursor: 'pointer',
-            }}
-            disabled={!users.length}
-          >
-            <MenuItem value="" disabled>
-              Select User
-            </MenuItem>
-            {users.map((u) => (
-              <MenuItem key={u.userName} value={u.userName}>
-                {u.firstName} {u.lastName}
+          {!isTrainee && (
+            <Select
+              value={selectedUser}
+              onChange={handleUserChange}
+              displayEmpty
+              inputProps={{ 'aria-label': 'Select User' }}
+              style={{
+                height: '36px',
+                padding: '0 12px',
+                fontSize: '14px',
+                border: '1px solid #ccc',
+                borderRadius: '4px',
+                backgroundColor: 'white',
+                cursor: 'pointer',
+              }}
+              disabled={!users.length}
+            >
+              <MenuItem value="" disabled>
+                Select User
               </MenuItem>
-            ))}
-          </Select>
+              {users.map((u) => (
+                <MenuItem key={u.userName} value={u.userName}>
+                  {u.firstName} {u.lastName}
+                </MenuItem>
+              ))}
+            </Select>
+          )}
+
           {/* Buttons Above Training Grid for Admin/Managers only*/}
           {(isAdmin || isManager) && (
             <>
