@@ -4,6 +4,8 @@ import {
   getFormattedTrainingStepsByDepartment,
   TrainingStep,
   deleteTrainingStep,
+  getTrainingStepById,
+  updateTrainingStep,
 } from '../services/trainingStepService';
 import { useAuth } from '../context/AuthContext';
 import { IconButton } from '@mui/material';
@@ -39,6 +41,37 @@ const TrainingGrid: React.FC<TrainingGridProps> = ({
     }
   };
 
+  const handleUpdateTrainingStep = async (stepID: number, updates: Partial<TrainingStep>) => {
+    try {
+      const existingStep = await getTrainingStepById(stepID);
+
+      const updatedStep = {
+        stepID: existingStep.stepID, 
+        step: existingStep.step,
+        item: existingStep.item,
+        description: existingStep.description,
+        traineeExpectation: existingStep.traineeExpectation,
+        trainerExpectation: existingStep.trainerExpectation,
+        trainingDuration: existingStep.trainingDuration,
+        filePath: existingStep.filePath,
+        isCompleted: updates.isCompleted ?? existingStep.isCompleted,
+        isSignedOff: updates.isSignedOff ?? existingStep.isSignedOff,
+        lastModifiedBy: existingStep.lastModifiedBy, 
+      };
+
+      await updateTrainingStep(stepID, updatedStep);
+
+      setRows((prevRows) =>
+        prevRows.map((row) =>
+          row.stepID === stepID ? { ...row, ...updates } : row
+        )
+      );
+    } catch (error) {
+      console.error('Error updating training step:', error);
+      alert('Failed to update step.');
+    }
+  };
+  
   const columns: GridColDef[] = [
     { field: 'step', headerName: 'Step', width: 70 },
     { field: 'item', headerName: 'Item', width: 150 },
@@ -82,6 +115,49 @@ const TrainingGrid: React.FC<TrainingGridProps> = ({
       headerName: 'Date Added',
       width: 150,
       valueGetter: () => new Date().toLocaleDateString(),
+    },
+    {
+      field: 'isCompleted',
+      headerName: 'Completed',
+      width: 120,
+      renderCell: (params) => {
+        const isTrainee = user?.role?.includes('Trainee');
+    
+        return (
+          <input
+            type="checkbox"
+            checked={params.value}
+            disabled={!isTrainee} // only trainees can click
+            onChange={async (e) => {
+              if (!isTrainee) return;
+              const newValue = e.target.checked;
+              await handleUpdateTrainingStep(params.row.stepID, { isCompleted: newValue });
+            }}
+          />
+        );
+      },
+    },
+    
+    {
+      field: 'isSignedOff',
+      headerName: 'Signed Off',
+      width: 120,
+      renderCell: (params) => {
+        const isTrainerOrManager = user?.role?.includes('Trainer') || user?.role?.includes('Manager');
+    
+        return (
+          <input
+            type="checkbox"
+            checked={params.value}
+            disabled={!isTrainerOrManager} // only trainers/managers/admins can click
+            onChange={async (e) => {
+              if (!isTrainerOrManager) return;
+              const newValue = e.target.checked;
+              await handleUpdateTrainingStep(params.row.stepID, { isSignedOff: newValue });
+            }}
+          />
+        );
+      },
     },
   ];
 
