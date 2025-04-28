@@ -141,11 +141,17 @@ export const getTrainingBookForTrainee = async () => {
     {
       method: 'GET',
       headers: {
+        'Content-Type': 'application/json',
         Authorization: `Bearer ${localStorage.getItem('token')}`,
       },
     }
   );
 
-  if (!response.ok) throw new Error('Failed to fetch trainee training book');
+  if (!response.ok) {
+    const errorText = await response.text();
+    console.error('Failed to fetch trainee training book:', errorText);
+    throw new Error('Failed to fetch trainee training book');
+  }
+
   return response.json();
 };
